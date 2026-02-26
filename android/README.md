@@ -5,14 +5,16 @@ Kotlin + Jetpack Compose client.
 ## Current Status
 
 - Android project skeleton created
-- App module with Compose dashboard placeholder
-- Ready for API integration (`/api/v1/overview`, `/applications`, `/jobs`)
+- Interactive Compose dashboard (stage filter, quick actions, add form)
+- API integration wired for `/api/v1/applications`
+- Falls back to demo data when backend is unreachable
 
 ## Build (Android Studio)
 
 1. Open `FMRO/android` in Android Studio
 2. Sync Gradle
-3. Run `app` on device/emulator
+3. Ensure backend is running (`http://10.0.2.2:8080` from emulator)
+4. Run `app` on device/emulator
 
 ## CLI (if Gradle available)
 
