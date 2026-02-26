@@ -20,6 +20,7 @@ object JobsTable : LongIdTable("job_posting") {
     val applyUrl = text("apply_url").nullable()
     val deadlineAt = text("deadline_at").nullable()
     val status = text("status").default("open")
+    val sourcePlatform = text("source_platform").nullable()
     val firstSeenAt = text("first_seen_at")
     val lastSeenAt = text("last_seen_at")
 }

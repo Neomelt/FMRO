@@ -1,0 +1,16 @@
+services:
+  automation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fmro-automation
+    network_mode: host
+    environment:
+      - FMRO_API_BASE_URL=http://127.0.0.1:8080
+      - ADB_SERVER_SOCKET=tcp:127.0.0.1:5037
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./output:/app/output
+    working_dir: /app

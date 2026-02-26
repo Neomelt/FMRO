@@ -41,7 +41,7 @@ fun Application.module() {
 
     routing {
         get("/health") {
-            call.respond(mapOf("ok" to true, "service" to "fmro-backend", "store" to store.javaClass.simpleName))
+            call.respond(mapOf("ok" to "true", "service" to "fmro-backend", "store" to store.javaClass.simpleName))
         }
 
         route("/api/v1") {
@@ -51,7 +51,7 @@ fun Application.module() {
 
             route("/companies") {
                 get {
-                    call.respond(store.listCompanies())
+                    call.respond(ArrayList(store.listCompanies()))
                 }
 
                 post {
@@ -83,7 +83,7 @@ fun Application.module() {
             route("/jobs") {
                 get {
                     val companyId = call.request.queryParameters["companyId"]?.toLongOrNull()
-                    call.respond(store.listJobs(companyId))
+                    call.respond(ArrayList(store.listJobs(companyId)))
                 }
 
                 post {
@@ -120,7 +120,7 @@ fun Application.module() {
             route("/applications") {
                 get {
                     val stage = call.request.queryParameters["stage"]
-                    call.respond(store.listApplications(stage))
+                    call.respond(ArrayList(store.listApplications(stage)))
                 }
 
                 post {
@@ -155,7 +155,7 @@ fun Application.module() {
 
                 get("/{id}/rounds") {
                     val id = call.pathLong("id") ?: return@get
-                    call.respond(store.listRounds(id))
+                    call.respond(ArrayList(store.listRounds(id)))
                 }
 
                 post("/{id}/rounds") {
@@ -195,7 +195,7 @@ fun Application.module() {
             route("/review-queue") {
                 get {
                     val status = call.request.queryParameters["status"]
-                    call.respond(store.listReviewQueue(status))
+                    call.respond(ArrayList(store.listReviewQueue(status)))
                 }
 
                 post {

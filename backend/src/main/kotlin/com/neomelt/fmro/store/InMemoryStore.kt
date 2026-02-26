@@ -111,6 +111,7 @@ object InMemoryStore : FmroStore {
             applyUrl = req.applyUrl,
             deadlineAt = req.deadlineAt,
             status = req.status,
+            sourcePlatform = req.sourcePlatform,
             firstSeenAt = now,
             lastSeenAt = now,
         )
@@ -127,6 +128,7 @@ object InMemoryStore : FmroStore {
             applyUrl = req.applyUrl ?: current.applyUrl,
             deadlineAt = req.deadlineAt ?: current.deadlineAt,
             status = req.status ?: current.status,
+            sourcePlatform = req.sourcePlatform ?: current.sourcePlatform,
             lastSeenAt = nowIso(),
         )
         jobs[id] = updated
@@ -265,6 +267,7 @@ object InMemoryStore : FmroStore {
                 applyUrl = current.payload["applyUrl"],
                 deadlineAt = current.payload["deadlineAt"],
                 status = current.payload["status"] ?: "open",
+                sourcePlatform = current.payload["sourcePlatform"],
             )
         )
 
