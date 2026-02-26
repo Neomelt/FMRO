@@ -1,0 +1,14 @@
+# Kotlin / Gradle
+.gradle/
+build/
+out/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+
+# Local env
+.env
+
+# OS
+.DS_Store

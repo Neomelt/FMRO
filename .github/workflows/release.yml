@@ -1,0 +1,25 @@
+name: FMRO Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build release bundle
+        run: |
+          mkdir -p dist
+          tar -czf dist/fmro-${GITHUB_REF_NAME}.tar.gz \
+            README.md docs infra backend android scripts
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: FMRO ${{ github.ref_name }}
+          generate_release_notes: true
+          files: dist/fmro-${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
