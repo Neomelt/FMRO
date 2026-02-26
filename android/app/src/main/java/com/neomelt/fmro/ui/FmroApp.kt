@@ -101,6 +101,8 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
                     onSelectJob = vm::selectJob,
                     onOpenUrl = { url -> if (url.isNotBlank()) uriHandler.openUri(url) },
                     onToggleBookmark = vm::toggleBookmark,
+                    onApproveReview = vm::approveReview,
+                    onRejectReview = vm::rejectReview,
                 )
 
                 AppTab.PIPELINE -> PipelineScreen(
@@ -204,6 +206,8 @@ private fun JobsScreen(
     onSelectJob: (Long?) -> Unit,
     onOpenUrl: (String) -> Unit,
     onToggleBookmark: (Long) -> Unit,
+    onApproveReview: (Long) -> Unit,
+    onRejectReview: (Long) -> Unit,
 ) {
     val lang = ui.languageMode
 
@@ -251,6 +255,39 @@ private fun JobsScreen(
         ui.updateStatus?.let { msg ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Text(msg, modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.bodySmall)
+            }
+        }
+
+        if (ui.reviewQueue.isNotEmpty()) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(i18n(lang, "Pending Review Queue", "待审核抓取"), style = MaterialTheme.typography.titleSmall)
+                    ui.reviewQueue.take(3).forEach { review ->
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text("${review.company} · ${review.title}", style = MaterialTheme.typography.bodyMedium)
+                            Text(i18n(lang, "Location", "地点") + ": ${review.location}", style = MaterialTheme.typography.bodySmall)
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                if (review.applyUrl.isNotBlank()) {
+                                    OutlinedButton(onClick = { onOpenUrl(review.applyUrl) }) {
+                                        Text(i18n(lang, "Preview", "预览"))
+                                    }
+                                }
+                                Button(onClick = { onApproveReview(review.id) }) {
+                                    Text(i18n(lang, "Approve", "通过"))
+                                }
+                                OutlinedButton(onClick = { onRejectReview(review.id) }) {
+                                    Text(i18n(lang, "Reject", "拒绝"))
+                                }
+                            }
+                        }
+                    }
+                    if (ui.reviewQueue.size > 3) {
+                        Text(
+                            i18n(lang, "More pending", "更多待审核") + ": ${ui.reviewQueue.size - 3}",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
             }
         }
 

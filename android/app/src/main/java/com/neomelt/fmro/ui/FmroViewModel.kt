@@ -43,6 +43,14 @@ data class UiJobItem(
     val sourceUrl: String,
 )
 
+data class UiReviewItem(
+    val id: Long,
+    val company: String,
+    val title: String,
+    val location: String,
+    val applyUrl: String,
+)
+
 data class FmroUiState(
     val loading: Boolean = true,
     val syncing: Boolean = false,
@@ -52,6 +60,7 @@ data class FmroUiState(
     val selectedId: Long? = null,
     val items: List<UiDashboardItem> = emptyList(),
     val jobs: List<UiJobItem> = emptyList(),
+    val reviewQueue: List<UiReviewItem> = emptyList(),
     val selectedJobId: Long? = null,
     val jobKeyword: String = "",
     val cityFilter: String = "All",
@@ -96,13 +105,15 @@ class FmroViewModel(app: Application) : AndroidViewModel(app) {
                     )
                 }
                 val apps = api.applications().map { it.toUi() }
-                jobs to apps
-            }.onSuccess { (jobs, apps) ->
+                val pendingReviews = api.reviewQueue("pending").map { it.toUiReview() }
+                Triple(jobs, apps, pendingReviews)
+            }.onSuccess { (jobs, apps, pendingReviews) ->
                 _uiState.update { state ->
                     state.copy(
                         loading = false,
                         jobs = jobs,
                         items = apps,
+                        reviewQueue = pendingReviews,
                         selectedId = apps.firstOrNull()?.id,
                         selectedJobId = jobs.firstOrNull()?.id,
                         error = null,
@@ -295,6 +306,62 @@ class FmroViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun approveReview(id: Long) {
+        _uiState.update {
+            it.copy(
+                syncing = true,
+                reviewQueue = it.reviewQueue.filterNot { review -> review.id == id },
+                updateStatus = "Approving queued job...",
+                error = null,
+            )
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                api.approveReview(id)
+            }.onSuccess {
+                _uiState.update { it.copy(syncing = false, updateStatus = "Review approved") }
+                refresh()
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(
+                        syncing = false,
+                        error = "Approve failed: ${err.message ?: "unknown"}",
+                    )
+                }
+                refresh()
+            }
+        }
+    }
+
+    fun rejectReview(id: Long) {
+        _uiState.update {
+            it.copy(
+                syncing = true,
+                reviewQueue = it.reviewQueue.filterNot { review -> review.id == id },
+                updateStatus = "Rejecting queued job...",
+                error = null,
+            )
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                api.rejectReview(id)
+            }.onSuccess {
+                _uiState.update { it.copy(syncing = false, updateStatus = "Review rejected") }
+                refresh()
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(
+                        syncing = false,
+                        error = "Reject failed: ${err.message ?: "unknown"}",
+                    )
+                }
+                refresh()
+            }
+        }
+    }
+
     fun crawlAndImportJobs() {
         viewModelScope.launch {
             val limit = _uiState.value.crawlerImportLimit
@@ -392,6 +459,20 @@ class FmroViewModel(app: Application) : AndroidViewModel(app) {
         stage = stage,
         deadline = deadlineAt?.take(10) ?: "TBD",
     )
+
+    private fun com.neomelt.fmro.data.ApiReviewQueueItem.toUiReview(): UiReviewItem {
+        val company = payload["companyName"] ?: payload["company"] ?: "Unknown Company"
+        val title = payload["title"] ?: payload["role"] ?: "Unknown Role"
+        val location = payload["location"] ?: "Unknown"
+        val applyUrl = payload["applyUrl"] ?: payload["sourceUrl"] ?: ""
+        return UiReviewItem(
+            id = id,
+            company = company,
+            title = title,
+            location = location,
+            applyUrl = applyUrl,
+        )
+    }
 
     private fun restorePreferences() {
         val theme = parseThemeMode(prefs.getString(KEY_THEME_MODE, ThemeMode.SYSTEM.name))

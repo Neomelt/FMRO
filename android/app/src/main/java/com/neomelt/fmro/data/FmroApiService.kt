@@ -41,4 +41,7 @@ interface FmroApiService {
 
     @POST("api/v1/review-queue/{id}/approve")
     suspend fun approveReview(@Path("id") id: Long): ApiJobPosting
+
+    @POST("api/v1/review-queue/{id}/reject")
+    suspend fun rejectReview(@Path("id") id: Long): ApiReviewQueueItem
 }
