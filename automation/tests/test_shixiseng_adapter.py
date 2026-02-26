@@ -44,7 +44,7 @@ class TestParseCard:
 
 
 class TestShixisengAdapterScrape:
-    @patch("fmro_auto.adapters.shixiseng.StealthyFetcher")
+    @patch("scrapling.fetchers.StealthyFetcher")
     @patch("fmro_auto.adapters.shixiseng.random_delay")
     def test_scrape_basic_flow(self, mock_delay, mock_fetcher):
         mock_card = MagicMock()

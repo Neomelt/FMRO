@@ -59,7 +59,7 @@ class TestParseCard:
 
 
 class TestLiepinAdapterScrape:
-    @patch("fmro_auto.adapters.liepin.StealthyFetcher")
+    @patch("scrapling.fetchers.StealthyFetcher")
     @patch("fmro_auto.adapters.liepin.random_delay")
     def test_scrape_returns_jobs(self, mock_delay, mock_fetcher):
         """Verify scrape orchestration with mocked fetcher."""
