@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     browser_headless: bool = True
     browser_slow_mo: int = 0
 
+    # Scraping
+    search_keywords: list[str] = ["机器人", "robotics"]
+    scrape_max_pages: int = 3
+    scrape_delay_seconds: float = 2.0
+
     # General
     log_level: str = "INFO"
     output_dir: str = "/app/output"

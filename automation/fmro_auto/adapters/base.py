@@ -18,6 +18,7 @@ class ScrapedJob:
     company_name: str
     title: str
     source_platform: str
+    company_id: str | None = None
     location: str | None = None
     source_url: str | None = None
     apply_url: str | None = None
@@ -32,6 +33,8 @@ class ScrapedJob:
             "status": self.status,
             "sourcePlatform": self.source_platform,
         }
+        if self.company_id:
+            payload["companyId"] = self.company_id
         if self.location:
             payload["location"] = self.location
         if self.source_url:
@@ -53,6 +56,7 @@ class PlatformAdapter(ABC):
 
     def __init__(self, api_client: FMROClient):
         self.api = api_client
+        self.resolver: Any | None = None  # optional CompanyResolver
         self.logger = logging.getLogger(f"adapter.{self.PLATFORM_NAME}")
 
     @abstractmethod
@@ -63,6 +67,8 @@ class PlatformAdapter(ABC):
         submitted = 0
         for job in jobs:
             try:
+                if self.resolver and not job.company_id:
+                    job.company_id = self.resolver.resolve(job.company_name)
                 self.api.submit_to_review_queue(
                     source_type=self.SOURCE_TYPE,
                     payload=job.to_review_payload(),

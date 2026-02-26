@@ -32,6 +32,21 @@ class FMROClient:
         resp.raise_for_status()
         return resp.json()
 
+    def create_company(
+        self,
+        name: str,
+        official_site: str | None = None,
+        careers_url: str | None = None,
+    ) -> dict[str, Any]:
+        body: dict[str, Any] = {"name": name}
+        if official_site is not None:
+            body["officialSite"] = official_site
+        if careers_url is not None:
+            body["careersUrl"] = careers_url
+        resp = self._client.post("/api/v1/companies", json=body)
+        resp.raise_for_status()
+        return resp.json()
+
     # -- Jobs -------------------------------------------------------------
     def list_jobs(self, company_id: int | None = None) -> list[dict[str, Any]]:
         params = {}
