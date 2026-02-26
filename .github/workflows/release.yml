@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v4
         with:
@@ -35,16 +37,30 @@ jobs:
           tar -czf dist/fmro-${GITHUB_REF_NAME}.tar.gz \
             README.md docs infra backend android scripts
 
+      - name: Generate release notes
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${GITHUB_REF_NAME}$" | head -n 1)
+          RANGE="${GITHUB_REF_NAME}"
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..${GITHUB_REF_NAME}"
+          fi
+
+          {
+            echo "FMRO release ${GITHUB_REF_NAME}"
+            echo
+            echo "## Highlights"
+            git log --no-merges --pretty='- %s (%h)' "$RANGE"
+            echo
+            echo "## Assets"
+            echo "- \`fmro-${GITHUB_REF_NAME}-debug.apk\`: Android debug APK"
+            echo "- \`fmro-${GITHUB_REF_NAME}.tar.gz\`: Source snapshot with backend/docs/scripts"
+          } > dist/release-notes.md
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: FMRO ${{ github.ref_name }}
-          body: |
-            FMRO release ${{ github.ref_name }}
-
-            - Android debug APK attached for direct install testing
-            - Backend API + crawler review flow
-            - Local Postgres setup and smoke scripts
+          body_path: dist/release-notes.md
           files: |
             dist/fmro-${{ github.ref_name }}.tar.gz
             dist/fmro-${{ github.ref_name }}-debug.apk
