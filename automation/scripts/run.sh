@@ -21,12 +21,17 @@ case "$ACTION" in
     echo "Running all tests..."
     docker compose run --rm automation python -m pytest tests/ -v
     ;;
+  crawl)
+    shift
+    echo "Running crawler orchestrator..."
+    docker compose run --rm automation python -m fmro_auto.orchestrator "$@"
+    ;;
   shell)
     echo "Launching automation shell..."
     docker compose run --rm automation bash
     ;;
   *)
-    echo "Usage: $0 {build|smoke|test|shell}"
+    echo "Usage: $0 {build|smoke|test|crawl|shell}"
     exit 1
     ;;
 esac
