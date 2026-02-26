@@ -62,10 +62,11 @@ data class FmroUiState(
     val latestVersion: String? = null,
     val releaseUrl: String? = null,
     val updateApkUrl: String? = null,
+    val backendBaseUrl: String = FmroApiClient.currentBaseUrl(),
 )
 
 class FmroViewModel : ViewModel() {
-    private val api = FmroApiClient.service
+    private val api get() = FmroApiClient.service()
     private val _uiState = MutableStateFlow(FmroUiState())
     val uiState: StateFlow<FmroUiState> = _uiState.asStateFlow()
 
@@ -158,6 +159,29 @@ class FmroViewModel : ViewModel() {
 
     fun setAutoUpdate(enabled: Boolean) {
         _uiState.update { it.copy(autoUpdateEnabled = enabled) }
+    }
+
+    fun setBackendBaseUrlInput(url: String) {
+        _uiState.update { it.copy(backendBaseUrl = url) }
+    }
+
+    fun applyBackendBaseUrl() {
+        val url = _uiState.value.backendBaseUrl
+        runCatching {
+            FmroApiClient.updateBaseUrl(url)
+        }.onSuccess {
+            _uiState.update {
+                it.copy(
+                    updateStatus = "Backend set: ${FmroApiClient.currentBaseUrl()}",
+                    error = null,
+                )
+            }
+            refresh()
+        }.onFailure { err ->
+            _uiState.update {
+                it.copy(error = "Invalid backend URL: ${err.message ?: "unknown"}")
+            }
+        }
     }
 
     fun setCrawlerImportLimit(limit: Int) {

@@ -10,7 +10,7 @@ Kotlin + Jetpack Compose client.
 - Jobs tab: keyword + city filters, bookmark, detail dialog, apply/source link jump
 - Jobs tab supports crawler import trigger (with configurable import size)
 - Pipeline tab: stage filter + quick actions + add form + delete application
-- Settings tab: theme mode, language mode, auto-update toggle, update check, one-click APK update, release jump
+- Settings tab: theme mode, language mode, backend endpoint override, auto-update toggle, update check, one-click APK update, release jump
 - Shows real backend data only; if backend is unreachable it displays an explicit error instead of fake demo jobs
 
 ## Build (Android Studio)

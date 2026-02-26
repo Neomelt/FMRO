@@ -22,12 +22,36 @@ object FmroApiClient {
         .addInterceptor(logging)
         .build()
 
-    val service: FmroApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BuildConfig.FMRO_API_BASE_URL)
+    @Volatile
+    private var baseUrl: String = normalizeBaseUrl(BuildConfig.FMRO_API_BASE_URL)
+
+    @Volatile
+    private var cachedService: FmroApiService = createService(baseUrl)
+
+    fun service(): FmroApiService = cachedService
+
+    fun currentBaseUrl(): String = baseUrl
+
+    @Synchronized
+    fun updateBaseUrl(newBaseUrl: String) {
+        val normalized = normalizeBaseUrl(newBaseUrl)
+        if (normalized == baseUrl) return
+        baseUrl = normalized
+        cachedService = createService(baseUrl)
+    }
+
+    private fun createService(base: String): FmroApiService {
+        return Retrofit.Builder()
+            .baseUrl(base)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(FmroApiService::class.java)
+    }
+
+    private fun normalizeBaseUrl(raw: String): String {
+        val trimmed = raw.trim()
+        if (trimmed.isEmpty()) return BuildConfig.FMRO_API_BASE_URL
+        return if (trimmed.endsWith("/")) trimmed else "$trimmed/"
     }
 }

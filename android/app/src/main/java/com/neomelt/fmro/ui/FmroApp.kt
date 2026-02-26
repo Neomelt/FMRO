@@ -122,6 +122,8 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
                     onThemeMode = vm::setThemeMode,
                     onLanguageMode = vm::setLanguageMode,
                     onAutoUpdate = vm::setAutoUpdate,
+                    onBackendBaseUrlInput = vm::setBackendBaseUrlInput,
+                    onApplyBackendBaseUrl = vm::applyBackendBaseUrl,
                     onCrawlerImportLimit = vm::setCrawlerImportLimit,
                     onCheckUpdates = vm::checkUpdates,
                     onOpenRelease = { url -> if (url.isNotBlank()) uriHandler.openUri(url) },
@@ -461,6 +463,8 @@ private fun SettingsScreen(
     onThemeMode: (ThemeMode) -> Unit,
     onLanguageMode: (LanguageMode) -> Unit,
     onAutoUpdate: (Boolean) -> Unit,
+    onBackendBaseUrlInput: (String) -> Unit,
+    onApplyBackendBaseUrl: () -> Unit,
     onCrawlerImportLimit: (Int) -> Unit,
     onCheckUpdates: () -> Unit,
     onOpenRelease: (String) -> Unit,
@@ -510,6 +514,32 @@ private fun SettingsScreen(
                         lang,
                         "Language mode currently affects app UI text. Full app locale persistence can be added next.",
                         "当前语言切换已影响应用文案；下个版本可补系统级 Locale 持久化。"
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(i18n(lang, "Backend Endpoint", "后端地址"), style = MaterialTheme.typography.titleSmall)
+                OutlinedTextField(
+                    value = ui.backendBaseUrl,
+                    onValueChange = onBackendBaseUrlInput,
+                    label = { Text(i18n(lang, "Base URL", "基础 URL")) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = onApplyBackendBaseUrl) {
+                        Text(i18n(lang, "Apply Endpoint", "应用地址"))
+                    }
+                }
+                Text(
+                    i18n(
+                        lang,
+                        "Emulator usually uses http://10.0.2.2:8080/ ; physical phone should use your PC LAN IP.",
+                        "模拟器通常用 http://10.0.2.2:8080/；真机请填写你电脑的局域网 IP。"
                     ),
                     style = MaterialTheme.typography.bodySmall,
                 )
