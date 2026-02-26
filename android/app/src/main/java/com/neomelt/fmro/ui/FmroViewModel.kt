@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.net.URL
@@ -60,6 +61,7 @@ data class FmroUiState(
     val updateStatus: String? = null,
     val latestVersion: String? = null,
     val releaseUrl: String? = null,
+    val updateApkUrl: String? = null,
 )
 
 class FmroViewModel : ViewModel() {
@@ -257,16 +259,32 @@ class FmroViewModel : ViewModel() {
                     val text = URL("https://api.github.com/repos/Neomelt/FMRO/releases/latest").readText()
                     val obj = Json.parseToJsonElement(text).jsonObject
                     val tag = obj["tag_name"]?.jsonPrimitive?.content ?: "unknown"
-                    val url = obj["html_url"]?.jsonPrimitive?.content ?: ""
-                    tag to url
+                    val releasePage = obj["html_url"]?.jsonPrimitive?.content ?: ""
+                    val apkUrl = obj["assets"]
+                        ?.jsonArray
+                        ?.firstOrNull { asset ->
+                            val name = asset.jsonObject["name"]?.jsonPrimitive?.content.orEmpty()
+                            name.endsWith("-debug.apk") || name.endsWith(".apk")
+                        }
+                        ?.jsonObject
+                        ?.get("browser_download_url")
+                        ?.jsonPrimitive
+                        ?.content
+                        ?: ""
+                    Triple(tag, releasePage, apkUrl)
                 }
-            }.onSuccess { (tag, url) ->
+            }.onSuccess { (tag, releasePage, apkUrl) ->
                 _uiState.update {
                     it.copy(
                         syncing = false,
                         latestVersion = tag,
-                        releaseUrl = url,
-                        updateStatus = "Latest release: $tag",
+                        releaseUrl = releasePage,
+                        updateApkUrl = apkUrl.ifBlank { null },
+                        updateStatus = if (apkUrl.isBlank()) {
+                            "Latest release: $tag"
+                        } else {
+                            "Latest release: $tag (ready to update)"
+                        },
                     )
                 }
             }.onFailure {

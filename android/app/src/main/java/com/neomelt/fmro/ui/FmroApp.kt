@@ -545,6 +545,12 @@ private fun SettingsScreen(
                     Button(onClick = onCheckUpdates) {
                         Text(i18n(lang, "Check Update", "检查更新"))
                     }
+                    val apkUrl = ui.updateApkUrl
+                    if (!apkUrl.isNullOrBlank()) {
+                        Button(onClick = { onOpenRelease(apkUrl) }) {
+                            Text(i18n(lang, "Update Now", "立即更新"))
+                        }
+                    }
                     val releaseUrl = ui.releaseUrl
                     if (!releaseUrl.isNullOrBlank()) {
                         OutlinedButton(onClick = { onOpenRelease(releaseUrl) }) {
