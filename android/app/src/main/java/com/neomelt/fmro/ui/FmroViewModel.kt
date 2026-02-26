@@ -364,15 +364,22 @@ class FmroViewModel(app: Application) : AndroidViewModel(app) {
 
     fun crawlAndImportJobs() {
         viewModelScope.launch {
-            val limit = _uiState.value.crawlerImportLimit
             _uiState.update { it.copy(syncing = true, updateStatus = "Crawling careers pages...") }
 
             runCatching {
                 val run = api.runCrawler()
                 val pending = api.reviewQueue("pending")
-                val imported = pending.take(limit)
-                imported.forEach { api.approveReview(it.id) }
-                "Crawled ${run.scannedCompanies} companies, imported ${imported.size} entries"
+                when {
+                    run.scannedCompanies == 0 -> {
+                        "No active companies to crawl. Please configure companies with careers URLs first."
+                    }
+                    run.queuedItems == 0 -> {
+                        "Crawler ran, but no valid pages were queued. Please check company careers URLs."
+                    }
+                    else -> {
+                        "Crawled ${run.scannedCompanies} companies, queued ${run.queuedItems} entries (${pending.size} pending review)"
+                    }
+                }
             }.onSuccess { msg ->
                 _uiState.update { it.copy(syncing = false, updateStatus = msg) }
                 refresh()

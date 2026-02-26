@@ -50,6 +50,12 @@ object PostgresStore : FmroStore {
         .build()
     private val titleRegex = Regex("(?is)<title[^>]*>(.*?)</title>")
 
+    private data class CrawlPage(
+        val statusCode: Int,
+        val finalUrl: String?,
+        val title: String?,
+    )
+
     private fun nowIso(): String = Instant.now().toString()
 
     override fun listCompanies(): List<Company> = transaction {
@@ -304,10 +310,16 @@ object PostgresStore : FmroStore {
 
         targets.forEach { company ->
             val careersUrl = company.careersUrl ?: return@forEach
-            val pageTitle = fetchPageTitle(careersUrl)
-            val inferredTitle = inferJobTitle(company.name, pageTitle)
+            val page = fetchPage(careersUrl) ?: return@forEach
 
-            if (hasCrawlerDuplicate(company.id, inferredTitle, careersUrl)) {
+            if (page.statusCode >= 400) {
+                return@forEach
+            }
+
+            val targetUrl = page.finalUrl ?: careersUrl
+            val inferredTitle = inferJobTitle(company.name, page.title)
+
+            if (hasCrawlerDuplicate(company.id, inferredTitle, targetUrl)) {
                 return@forEach
             }
 
@@ -319,11 +331,11 @@ object PostgresStore : FmroStore {
                         "companyName" to company.name,
                         "title" to inferredTitle,
                         "location" to "Unknown",
-                        "sourceUrl" to careersUrl,
-                        "applyUrl" to careersUrl,
+                        "sourceUrl" to targetUrl,
+                        "applyUrl" to targetUrl,
                         "status" to "open",
                     ),
-                    confidence = if (pageTitle == null) 0.45 else 0.62,
+                    confidence = if (page.title == null) 0.45 else 0.62,
                 )
             )
             queued += 1
@@ -389,7 +401,7 @@ object PostgresStore : FmroStore {
             }
     }
 
-    private fun fetchPageTitle(url: String): String? {
+    private fun fetchPage(url: String): CrawlPage? {
         val request = runCatching {
             HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -399,12 +411,23 @@ object PostgresStore : FmroStore {
                 .build()
         }.getOrNull() ?: return null
 
-        val body = runCatching {
-            httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body()
+        val response = runCatching {
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         }.getOrNull() ?: return null
 
-        val match = titleRegex.find(body) ?: return null
-        return match.groupValues[1].replace(Regex("\\s+"), " ").trim().takeIf { it.isNotBlank() }
+        val body = response.body().orEmpty()
+        val title = titleRegex.find(body)
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.replace(Regex("\\s+"), " ")
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
+
+        return CrawlPage(
+            statusCode = response.statusCode(),
+            finalUrl = response.uri()?.toString(),
+            title = title,
+        )
     }
 
     private fun inferJobTitle(companyName: String, pageTitle: String?): String {

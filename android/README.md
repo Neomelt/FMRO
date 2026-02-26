@@ -8,7 +8,7 @@ Kotlin + Jetpack Compose client.
 - Interactive Compose screens with clickable cards and dialogs
 - API integration wired for `/api/v1/applications`, `/api/v1/jobs`, `/api/v1/companies`
 - Jobs tab: keyword + city filters, bookmark (persisted), detail dialog, apply/source link jump
-- Jobs tab supports crawler import trigger (with configurable import size) and pending review approve/reject
+- Jobs tab supports crawler trigger + pending review approve/reject (no blind auto-import)
 - Pipeline tab: stage filter + quick actions + add form + delete application
 - Settings tab: theme mode/language/endpoint/crawler-limit persisted locally, auto-update toggle, update check, one-click APK update, release jump
 - Shows real backend data only; if backend is unreachable it displays an explicit error instead of fake demo jobs
