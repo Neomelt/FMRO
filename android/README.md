@@ -4,9 +4,11 @@ Kotlin + Jetpack Compose client.
 
 ## Current Status
 
-- Android project skeleton created
-- Interactive Compose dashboard (stage filter, quick actions, add form)
-- API integration wired for `/api/v1/applications`
+- Bottom navigation: Jobs / Pipeline / Settings
+- Interactive Pipeline dashboard (stage filter, quick actions, add form)
+- API integration wired for `/api/v1/applications`, `/api/v1/jobs`, `/api/v1/companies`
+- Jobs tab supports crawler import trigger and apply/source link jump
+- Settings tab supports theme mode, language mode, update check and release jump
 - Falls back to demo data when backend is unreachable
 
 ## Build (Android Studio)
