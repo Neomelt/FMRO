@@ -15,3 +15,9 @@ out/
 
 # Local runtime artifacts
 .tmp/
+
+# Python / Automation
+automation/output/
+__pycache__/
+*.pyc
+.pytest_cache/
