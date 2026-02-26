@@ -1,5 +1,6 @@
 package com.neomelt.fmro.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -314,7 +316,19 @@ private fun JobsScreen(
                                 Text(job.title, style = MaterialTheme.typography.titleSmall)
                                 Text(if (bookmarked) "★" else "☆")
                             }
-                            Text(job.company, style = MaterialTheme.typography.bodyMedium)
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(job.company, style = MaterialTheme.typography.bodyMedium)
+                                if (job.sourcePlatform.isNotBlank()) {
+                                    Text(
+                                        text = platformDisplayName(job.sourcePlatform),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier
+                                            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(4.dp))
+                                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                                    )
+                                }
+                            }
                             Text(i18n(lang, "Location", "地点") + ": ${job.location}", style = MaterialTheme.typography.bodySmall)
                             Text(i18n(lang, "Deadline", "截止") + ": ${job.deadline}", style = MaterialTheme.typography.bodySmall)
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -352,6 +366,9 @@ private fun JobDetailDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(job.company)
+                if (job.sourcePlatform.isNotBlank()) {
+                    Text(i18n(lang, "Source", "来源") + ": ${platformDisplayName(job.sourcePlatform)}")
+                }
                 Text(i18n(lang, "Location", "地点") + ": ${job.location}")
                 Text(i18n(lang, "Deadline", "截止") + ": ${job.deadline}")
                 if (job.applyUrl.isNotBlank()) {
@@ -730,6 +747,15 @@ private fun StageFilters(selectedStage: String, onStageSelect: (String) -> Unit,
             }
         }
     }
+}
+
+private fun platformDisplayName(code: String): String = when (code) {
+    "boss_zhipin" -> "Boss\u76f4\u8058"
+    "liepin" -> "\u730e\u8058"
+    "shixiseng" -> "\u5b9e\u4e60\u50e7"
+    "career_page" -> "\u5b98\u7f51"
+    "crawler.website" -> "\u7f51\u9875\u722c\u53d6"
+    else -> code
 }
 
 private fun i18n(mode: LanguageMode, en: String, zh: String): String {

@@ -39,6 +39,7 @@ data class JobPosting(
     val applyUrl: String? = null,
     val deadlineAt: String? = null,
     val status: String = "open",
+    val sourcePlatform: String? = null,
     val firstSeenAt: String,
     val lastSeenAt: String,
 )
@@ -52,6 +53,7 @@ data class CreateJobPostingRequest(
     val applyUrl: String? = null,
     val deadlineAt: String? = null,
     val status: String = "open",
+    val sourcePlatform: String? = null,
 )
 
 @Serializable
@@ -62,6 +64,7 @@ data class UpdateJobPostingRequest(
     val applyUrl: String? = null,
     val deadlineAt: String? = null,
     val status: String? = null,
+    val sourcePlatform: String? = null,
 )
 
 @Serializable

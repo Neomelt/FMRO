@@ -41,6 +41,7 @@ data class UiJobItem(
     val deadline: String,
     val applyUrl: String,
     val sourceUrl: String,
+    val sourcePlatform: String,
 )
 
 data class UiReviewItem(
@@ -102,6 +103,7 @@ class FmroViewModel(app: Application) : AndroidViewModel(app) {
                         deadline = job.deadlineAt?.take(10) ?: "TBD",
                         applyUrl = job.applyUrl ?: "",
                         sourceUrl = job.sourceUrl ?: "",
+                        sourcePlatform = job.sourcePlatform ?: "",
                     )
                 }
                 val apps = api.applications().map { it.toUi() }

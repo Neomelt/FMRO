@@ -115,6 +115,7 @@ object PostgresStore : FmroStore {
             it[applyUrl] = req.applyUrl
             it[deadlineAt] = req.deadlineAt
             it[status] = req.status
+            it[sourcePlatform] = req.sourcePlatform
             it[firstSeenAt] = now
             it[lastSeenAt] = now
         }[JobsTable.id].value
@@ -132,6 +133,7 @@ object PostgresStore : FmroStore {
             it[applyUrl] = req.applyUrl ?: current[JobsTable.applyUrl]
             it[deadlineAt] = req.deadlineAt ?: current[JobsTable.deadlineAt]
             it[status] = req.status ?: current[JobsTable.status]
+            it[sourcePlatform] = req.sourcePlatform ?: current[JobsTable.sourcePlatform]
             it[lastSeenAt] = nowIso()
         }
 
@@ -279,6 +281,7 @@ object PostgresStore : FmroStore {
             it[applyUrl] = payload["applyUrl"]
             it[deadlineAt] = payload["deadlineAt"]
             it[status] = payload["status"] ?: "open"
+            it[JobsTable.sourcePlatform] = payload["sourcePlatform"]
             it[firstSeenAt] = now
             it[lastSeenAt] = now
         }[JobsTable.id].value
@@ -458,6 +461,7 @@ object PostgresStore : FmroStore {
         applyUrl = this[JobsTable.applyUrl],
         deadlineAt = this[JobsTable.deadlineAt],
         status = this[JobsTable.status],
+        sourcePlatform = this[JobsTable.sourcePlatform],
         firstSeenAt = this[JobsTable.firstSeenAt],
         lastSeenAt = this[JobsTable.lastSeenAt],
     )

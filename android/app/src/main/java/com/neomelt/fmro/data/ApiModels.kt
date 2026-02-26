@@ -53,6 +53,7 @@ data class ApiJobPosting(
     @SerialName("applyUrl") val applyUrl: String? = null,
     @SerialName("deadlineAt") val deadlineAt: String? = null,
     val status: String,
+    @SerialName("sourcePlatform") val sourcePlatform: String? = null,
 )
 
 @Serializable

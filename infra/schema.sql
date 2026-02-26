@@ -30,6 +30,7 @@ create table if not exists job_posting (
   apply_url text,
   deadline_at text,
   status text not null default 'open',
+  source_platform text,
   first_seen_at text not null,
   last_seen_at text not null
 );
