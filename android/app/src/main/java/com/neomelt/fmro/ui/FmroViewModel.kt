@@ -1,6 +1,8 @@
 package com.neomelt.fmro.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.neomelt.fmro.data.ApiApplication
 import com.neomelt.fmro.data.ApiCreateApplicationRequest
@@ -65,12 +67,14 @@ data class FmroUiState(
     val backendBaseUrl: String = FmroApiClient.currentBaseUrl(),
 )
 
-class FmroViewModel : ViewModel() {
+class FmroViewModel(app: Application) : AndroidViewModel(app) {
+    private val prefs = app.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
     private val api get() = FmroApiClient.service()
     private val _uiState = MutableStateFlow(FmroUiState())
     val uiState: StateFlow<FmroUiState> = _uiState.asStateFlow()
 
     init {
+        restorePreferences()
         refresh()
     }
 
@@ -140,25 +144,31 @@ class FmroViewModel : ViewModel() {
     }
 
     fun toggleBookmark(jobId: Long) {
+        var updated: Set<Long> = emptySet()
         _uiState.update { state ->
             val next = state.bookmarkedJobIds.toMutableSet()
             if (!next.add(jobId)) {
                 next.remove(jobId)
             }
+            updated = next
             state.copy(bookmarkedJobIds = next)
         }
+        saveBookmarks(updated)
     }
 
     fun setThemeMode(mode: ThemeMode) {
         _uiState.update { it.copy(themeMode = mode) }
+        prefs.edit().putString(KEY_THEME_MODE, mode.name).apply()
     }
 
     fun setLanguageMode(mode: LanguageMode) {
         _uiState.update { it.copy(languageMode = mode) }
+        prefs.edit().putString(KEY_LANGUAGE_MODE, mode.name).apply()
     }
 
     fun setAutoUpdate(enabled: Boolean) {
         _uiState.update { it.copy(autoUpdateEnabled = enabled) }
+        prefs.edit().putBoolean(KEY_AUTO_UPDATE, enabled).apply()
     }
 
     fun setBackendBaseUrlInput(url: String) {
@@ -170,9 +180,12 @@ class FmroViewModel : ViewModel() {
         runCatching {
             FmroApiClient.updateBaseUrl(url)
         }.onSuccess {
+            val current = FmroApiClient.currentBaseUrl()
+            prefs.edit().putString(KEY_BACKEND_URL, current).apply()
             _uiState.update {
                 it.copy(
-                    updateStatus = "Backend set: ${FmroApiClient.currentBaseUrl()}",
+                    backendBaseUrl = current,
+                    updateStatus = "Backend set: $current",
                     error = null,
                 )
             }
@@ -186,6 +199,7 @@ class FmroViewModel : ViewModel() {
 
     fun setCrawlerImportLimit(limit: Int) {
         _uiState.update { it.copy(crawlerImportLimit = limit) }
+        prefs.edit().putInt(KEY_CRAWLER_LIMIT, limit).apply()
     }
 
     fun addApplication(company: String, role: String) {
@@ -379,6 +393,55 @@ class FmroViewModel : ViewModel() {
         deadline = deadlineAt?.take(10) ?: "TBD",
     )
 
+    private fun restorePreferences() {
+        val theme = parseThemeMode(prefs.getString(KEY_THEME_MODE, ThemeMode.SYSTEM.name))
+        val language = parseLanguageMode(prefs.getString(KEY_LANGUAGE_MODE, LanguageMode.ZH.name))
+        val autoUpdate = prefs.getBoolean(KEY_AUTO_UPDATE, true)
+        val crawlerLimit = prefs.getInt(KEY_CRAWLER_LIMIT, 50)
+        val bookmarks = parseBookmarks(prefs.getString(KEY_BOOKMARKS, ""))
+        val backend = prefs.getString(KEY_BACKEND_URL, FmroApiClient.currentBaseUrl()).orEmpty()
+
+        runCatching { FmroApiClient.updateBaseUrl(backend) }
+
+        _uiState.update {
+            it.copy(
+                themeMode = theme,
+                languageMode = language,
+                autoUpdateEnabled = autoUpdate,
+                crawlerImportLimit = crawlerLimit,
+                bookmarkedJobIds = bookmarks,
+                backendBaseUrl = FmroApiClient.currentBaseUrl(),
+            )
+        }
+    }
+
+    private fun saveBookmarks(bookmarks: Set<Long>) {
+        val encoded = bookmarks.sorted().joinToString(",")
+        prefs.edit().putString(KEY_BOOKMARKS, encoded).apply()
+    }
+
+    private fun parseBookmarks(raw: String?): Set<Long> {
+        if (raw.isNullOrBlank()) return emptySet()
+        return raw.split(",").mapNotNull { it.toLongOrNull() }.toSet()
+    }
+
+    private fun parseThemeMode(raw: String?): ThemeMode {
+        return ThemeMode.entries.firstOrNull { it.name == raw } ?: ThemeMode.SYSTEM
+    }
+
+    private fun parseLanguageMode(raw: String?): LanguageMode {
+        return LanguageMode.entries.firstOrNull { it.name == raw } ?: LanguageMode.ZH
+    }
+
+    companion object {
+        private const val PREFS_FILE = "fmro_prefs"
+        private const val KEY_THEME_MODE = "theme_mode"
+        private const val KEY_LANGUAGE_MODE = "language_mode"
+        private const val KEY_AUTO_UPDATE = "auto_update"
+        private const val KEY_CRAWLER_LIMIT = "crawler_limit"
+        private const val KEY_BOOKMARKS = "bookmarked_job_ids"
+        private const val KEY_BACKEND_URL = "backend_base_url"
+    }
 }
 
 val stageFlow = listOf("Applied", "OA", "Interview #1", "Interview #2", "HR", "Offer")
