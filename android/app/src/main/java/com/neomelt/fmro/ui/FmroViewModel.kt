@@ -103,17 +103,11 @@ class FmroViewModel : ViewModel() {
                         error = null,
                     )
                 }
-            }.onFailure {
-                val fallbackJobs = fallbackJobs()
-                val fallbackApps = fallbackItems()
-                _uiState.update {
-                    it.copy(
+            }.onFailure { err ->
+                _uiState.update { state ->
+                    state.copy(
                         loading = false,
-                        jobs = fallbackJobs,
-                        items = fallbackApps,
-                        selectedId = fallbackApps.firstOrNull()?.id,
-                        selectedJobId = fallbackJobs.firstOrNull()?.id,
-                        error = "Using demo data (backend unreachable)",
+                        error = "Backend unreachable: ${err.message ?: "unknown"}",
                     )
                 }
             }
@@ -228,6 +222,41 @@ class FmroViewModel : ViewModel() {
 
     fun markOffer(id: Long) = updateStage(id, "Offer")
 
+    fun deleteApplication(id: Long) {
+        val previous = _uiState.value.items
+        _uiState.update { state ->
+            val nextItems = state.items.filterNot { it.id == id }
+            state.copy(
+                items = nextItems,
+                selectedId = nextItems.firstOrNull()?.id,
+                syncing = true,
+                error = null,
+            )
+        }
+
+        if (id <= 0) {
+            _uiState.update { it.copy(syncing = false) }
+            return
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                api.deleteApplication(id)
+            }.onSuccess {
+                _uiState.update { it.copy(syncing = false) }
+            }.onFailure {
+                _uiState.update {
+                    it.copy(
+                        syncing = false,
+                        items = previous,
+                        selectedId = previous.firstOrNull()?.id,
+                        error = "Delete failed (API unreachable)",
+                    )
+                }
+            }
+        }
+    }
+
     fun crawlAndImportJobs() {
         viewModelScope.launch {
             val limit = _uiState.value.crawlerImportLimit
@@ -326,17 +355,6 @@ class FmroViewModel : ViewModel() {
         deadline = deadlineAt?.take(10) ?: "TBD",
     )
 
-    private fun fallbackItems(): List<UiDashboardItem> = listOf(
-        UiDashboardItem(1, "DJI", "Robotics Intern", "Applied", "2026-03-31"),
-        UiDashboardItem(2, "Unitree", "Perception Intern", "Interview #1", "2026-03-05"),
-        UiDashboardItem(3, "AgiBot", "SLAM Intern", "OA", "2026-03-10"),
-    )
-
-    private fun fallbackJobs(): List<UiJobItem> = listOf(
-        UiJobItem(1001, "DJI", "Robotics Intern", "Shenzhen", "2026-03-31", "https://www.dji.com/careers", "https://www.dji.com/careers"),
-        UiJobItem(1002, "Unitree", "Perception Intern", "Hangzhou", "2026-03-28", "https://www.unitree.com/career", "https://www.unitree.com/career"),
-        UiJobItem(1003, "AgiBot", "SLAM Intern", "Shanghai", "2026-03-20", "https://www.agibot.cn/join", "https://www.agibot.cn/join"),
-    )
 }
 
 val stageFlow = listOf("Applied", "OA", "Interview #1", "Interview #2", "HR", "Offer")

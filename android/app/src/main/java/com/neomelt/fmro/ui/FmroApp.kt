@@ -113,6 +113,7 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
                     onNextStage = vm::moveToNextStage,
                     onReject = vm::markRejected,
                     onOffer = vm::markOffer,
+                    onDelete = vm::deleteApplication,
                 )
 
                 AppTab.SETTINGS -> SettingsScreen(
@@ -348,6 +349,7 @@ private fun PipelineScreen(
     onNextStage: (Long) -> Unit,
     onReject: (Long) -> Unit,
     onOffer: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
 ) {
     val selectedItem = ui.items.firstOrNull { it.id == ui.selectedId }
     val lang = ui.languageMode
@@ -441,6 +443,9 @@ private fun PipelineScreen(
                         }
                         Button(onClick = { onOffer(selectedItem.id) }) {
                             Text(i18n(lang, "Offer", "Offer"))
+                        }
+                        OutlinedButton(onClick = { onDelete(selectedItem.id) }) {
+                            Text(i18n(lang, "Delete", "删除"))
                         }
                     }
                 }
