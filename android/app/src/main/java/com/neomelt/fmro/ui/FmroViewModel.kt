@@ -49,9 +49,14 @@ data class FmroUiState(
     val selectedId: Long? = null,
     val items: List<UiDashboardItem> = emptyList(),
     val jobs: List<UiJobItem> = emptyList(),
+    val selectedJobId: Long? = null,
+    val jobKeyword: String = "",
+    val cityFilter: String = "All",
+    val bookmarkedJobIds: Set<Long> = emptySet(),
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val languageMode: LanguageMode = LanguageMode.ZH,
     val autoUpdateEnabled: Boolean = true,
+    val crawlerImportLimit: Int = 50,
     val updateStatus: String? = null,
     val latestVersion: String? = null,
     val releaseUrl: String? = null,
@@ -86,12 +91,13 @@ class FmroViewModel : ViewModel() {
                 val apps = api.applications().map { it.toUi() }
                 jobs to apps
             }.onSuccess { (jobs, apps) ->
-                _uiState.update {
-                    it.copy(
+                _uiState.update { state ->
+                    state.copy(
                         loading = false,
                         jobs = jobs,
                         items = apps,
                         selectedId = apps.firstOrNull()?.id,
+                        selectedJobId = jobs.firstOrNull()?.id,
                         error = null,
                     )
                 }
@@ -104,6 +110,7 @@ class FmroViewModel : ViewModel() {
                         jobs = fallbackJobs,
                         items = fallbackApps,
                         selectedId = fallbackApps.firstOrNull()?.id,
+                        selectedJobId = fallbackJobs.firstOrNull()?.id,
                         error = "Using demo data (backend unreachable)",
                     )
                 }
@@ -123,6 +130,28 @@ class FmroViewModel : ViewModel() {
         _uiState.update { it.copy(selectedId = id) }
     }
 
+    fun selectJob(id: Long?) {
+        _uiState.update { it.copy(selectedJobId = id) }
+    }
+
+    fun setJobKeyword(keyword: String) {
+        _uiState.update { it.copy(jobKeyword = keyword) }
+    }
+
+    fun setCityFilter(city: String) {
+        _uiState.update { it.copy(cityFilter = city) }
+    }
+
+    fun toggleBookmark(jobId: Long) {
+        _uiState.update { state ->
+            val next = state.bookmarkedJobIds.toMutableSet()
+            if (!next.add(jobId)) {
+                next.remove(jobId)
+            }
+            state.copy(bookmarkedJobIds = next)
+        }
+    }
+
     fun setThemeMode(mode: ThemeMode) {
         _uiState.update { it.copy(themeMode = mode) }
     }
@@ -133,6 +162,10 @@ class FmroViewModel : ViewModel() {
 
     fun setAutoUpdate(enabled: Boolean) {
         _uiState.update { it.copy(autoUpdateEnabled = enabled) }
+    }
+
+    fun setCrawlerImportLimit(limit: Int) {
+        _uiState.update { it.copy(crawlerImportLimit = limit) }
     }
 
     fun addApplication(company: String, role: String) {
@@ -179,6 +212,10 @@ class FmroViewModel : ViewModel() {
         }
     }
 
+    fun addApplicationFromJob(job: UiJobItem) {
+        addApplication(company = job.company, role = job.title)
+    }
+
     fun moveToNextStage(id: Long) {
         val current = _uiState.value.items.firstOrNull { it.id == id } ?: return
         val next = nextStage(current.stage)
@@ -191,13 +228,15 @@ class FmroViewModel : ViewModel() {
 
     fun crawlAndImportJobs() {
         viewModelScope.launch {
+            val limit = _uiState.value.crawlerImportLimit
             _uiState.update { it.copy(syncing = true, updateStatus = "Crawling careers pages...") }
 
             runCatching {
                 val run = api.runCrawler()
                 val pending = api.reviewQueue("pending")
-                pending.take(50).forEach { api.approveReview(it.id) }
-                "Crawled ${run.scannedCompanies} companies, imported ${pending.size} entries"
+                val imported = pending.take(limit)
+                imported.forEach { api.approveReview(it.id) }
+                "Crawled ${run.scannedCompanies} companies, imported ${imported.size} entries"
             }.onSuccess { msg ->
                 _uiState.update { it.copy(syncing = false, updateStatus = msg) }
                 refresh()
