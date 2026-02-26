@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -19,7 +22,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: FMRO ${{ github.ref_name }}
-          generate_release_notes: true
+          body: |
+            FMRO release ${{ github.ref_name }}
+
+            - Android scaffold (Kotlin + Compose)
+            - Backend API + crawler review flow
+            - Local Postgres setup and smoke scripts
           files: dist/fmro-${{ github.ref_name }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
