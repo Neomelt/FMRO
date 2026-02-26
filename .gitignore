@@ -12,3 +12,6 @@ out/
 
 # OS
 .DS_Store
+
+# Local runtime artifacts
+.tmp/

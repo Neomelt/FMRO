@@ -20,6 +20,20 @@ Kotlin + Jetpack Compose client.
 3. Ensure backend is running (`http://10.0.2.2:8080` from emulator)
 4. Run `app` on device/emulator
 
+## Fast Dev Loop (recommended)
+
+From repo root:
+
+```bash
+./scripts/dev_android_loop.sh up emulator
+```
+
+For real device:
+
+```bash
+./scripts/dev_android_loop.sh up usb
+```
+
 ## CLI (if Gradle available)
 
 ```bash

@@ -5,6 +5,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+val fmroApiBaseUrl = (findProperty("fmroApiBaseUrl") as String?)
+    ?: System.getenv("FMRO_API_BASE_URL")
+    ?: "http://10.0.2.2:8080/"
+
 android {
     namespace = "com.neomelt.fmro"
     compileSdk = 35
@@ -17,7 +21,7 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "FMRO_API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+        buildConfigField("String", "FMRO_API_BASE_URL", "\"$fmroApiBaseUrl\"")
     }
 
     buildTypes {

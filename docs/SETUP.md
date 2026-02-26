@@ -41,3 +41,7 @@ From project root:
 ```bash
 ./scripts/smoke_api.sh
 ```
+
+## 5) Android emulator + hot iteration
+
+See `docs/ANDROID_DEV.md`.

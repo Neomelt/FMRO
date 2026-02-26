@@ -34,6 +34,14 @@ See `docs/SETUP.md` for PostgreSQL + backend startup.
 ./scripts/smoke_api.sh
 ```
 
+## Android Dev Loop (Ubuntu/Windows/macOS)
+
+```bash
+./scripts/dev_android_loop.sh up emulator
+```
+
+See `docs/ANDROID_DEV.md` for emulator setup and USB-device workflow.
+
 ## CI/CD
 
 - CI: `FMRO/.github/workflows/ci.yml`
