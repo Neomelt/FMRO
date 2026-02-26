@@ -1,6 +1,7 @@
 package com.neomelt.fmro.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,8 +52,25 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
         ui.items.filter { it.stage == ui.selectedStage }
     }
 
+    val allCities = remember(ui.jobs) {
+        listOf("All") + ui.jobs.map { it.location }.distinct().sorted()
+    }
+
+    val filteredJobs = remember(ui.jobs, ui.jobKeyword, ui.cityFilter) {
+        ui.jobs.filter { job ->
+            val hitKeyword = ui.jobKeyword.isBlank() ||
+                job.title.contains(ui.jobKeyword, ignoreCase = true) ||
+                job.company.contains(ui.jobKeyword, ignoreCase = true) ||
+                job.location.contains(ui.jobKeyword, ignoreCase = true)
+            val hitCity = ui.cityFilter == "All" || job.location == ui.cityFilter
+            hitKeyword && hitCity
+        }
+    }
+
+    val selectedJob = ui.jobs.firstOrNull { it.id == ui.selectedJobId }
+
     val darkTheme = when (ui.themeMode) {
-        ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
         ThemeMode.LIGHT -> false
         ThemeMode.DARK -> true
     }
@@ -74,9 +92,15 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
                 AppTab.JOBS -> JobsScreen(
                     innerPadding = innerPadding,
                     ui = ui,
+                    jobs = filteredJobs,
+                    cities = allCities,
                     onRefresh = vm::refresh,
                     onCrawl = vm::crawlAndImportJobs,
+                    onKeywordChange = vm::setJobKeyword,
+                    onCitySelect = vm::setCityFilter,
+                    onSelectJob = vm::selectJob,
                     onOpenUrl = { url -> if (url.isNotBlank()) uriHandler.openUri(url) },
+                    onToggleBookmark = vm::toggleBookmark,
                 )
 
                 AppTab.PIPELINE -> PipelineScreen(
@@ -97,6 +121,7 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
                     onThemeMode = vm::setThemeMode,
                     onLanguageMode = vm::setLanguageMode,
                     onAutoUpdate = vm::setAutoUpdate,
+                    onCrawlerImportLimit = vm::setCrawlerImportLimit,
                     onCheckUpdates = vm::checkUpdates,
                     onOpenRelease = { url -> if (url.isNotBlank()) uriHandler.openUri(url) },
                 )
@@ -111,6 +136,26 @@ fun FmroApp(vm: FmroViewModel = viewModel()) {
                 vm.addApplication(company, role)
                 showAddDialog = false
             }
+        )
+    }
+
+    if (selectedJob != null && ui.selectedTab == AppTab.JOBS) {
+        JobDetailDialog(
+            lang = ui.languageMode,
+            job = selectedJob,
+            bookmarked = ui.bookmarkedJobIds.contains(selectedJob.id),
+            onDismiss = { vm.selectJob(null) },
+            onApply = { if (selectedJob.applyUrl.isNotBlank()) uriHandler.openUri(selectedJob.applyUrl) },
+            onOpenSource = {
+                val source = if (selectedJob.sourceUrl.isNotBlank()) selectedJob.sourceUrl else selectedJob.applyUrl
+                if (source.isNotBlank()) uriHandler.openUri(source)
+            },
+            onBookmark = { vm.toggleBookmark(selectedJob.id) },
+            onTrack = {
+                vm.addApplicationFromJob(selectedJob)
+                vm.selectJob(null)
+                vm.selectTab(AppTab.PIPELINE)
+            },
         )
     }
 }
@@ -147,9 +192,15 @@ private fun BottomNav(
 private fun JobsScreen(
     innerPadding: PaddingValues,
     ui: FmroUiState,
+    jobs: List<UiJobItem>,
+    cities: List<String>,
     onRefresh: () -> Unit,
     onCrawl: () -> Unit,
+    onKeywordChange: (String) -> Unit,
+    onCitySelect: (String) -> Unit,
+    onSelectJob: (Long?) -> Unit,
     onOpenUrl: (String) -> Unit,
+    onToggleBookmark: (Long) -> Unit,
 ) {
     val lang = ui.languageMode
 
@@ -167,6 +218,26 @@ private fun JobsScreen(
             Button(onClick = onCrawl) { Text(i18n(lang, "Crawl Jobs", "抓取岗位")) }
         }
 
+        OutlinedTextField(
+            value = ui.jobKeyword,
+            onValueChange = onKeywordChange,
+            label = { Text(i18n(lang, "Search company/role/city", "搜索公司/岗位/城市")) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(cities) { city ->
+                val selected = ui.cityFilter == city
+                val label = if (city == "All") i18n(lang, "All Cities", "全部城市") else city
+                if (selected) {
+                    Button(onClick = { onCitySelect(city) }) { Text(label) }
+                } else {
+                    OutlinedButton(onClick = { onCitySelect(city) }) { Text(label) }
+                }
+            }
+        }
+
         if (ui.loading) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 CircularProgressIndicator(modifier = Modifier.padding(top = 2.dp))
@@ -180,24 +251,40 @@ private fun JobsScreen(
             }
         }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(ui.jobs, key = { it.id }) { job ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(job.title, style = MaterialTheme.typography.titleSmall)
-                        Text(job.company, style = MaterialTheme.typography.bodyMedium)
-                        Text(i18n(lang, "Location", "地点") + ": ${job.location}", style = MaterialTheme.typography.bodySmall)
-                        Text(i18n(lang, "Deadline", "截止") + ": ${job.deadline}", style = MaterialTheme.typography.bodySmall)
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            if (job.applyUrl.isNotBlank()) {
-                                Button(onClick = { onOpenUrl(job.applyUrl) }) {
-                                    Text(i18n(lang, "Apply", "投递"))
-                                }
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.weight(1f)) {
+            if (jobs.isEmpty()) {
+                item {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            i18n(lang, "No jobs found with current filters.", "当前筛选下暂无岗位。"),
+                            modifier = Modifier.padding(12.dp),
+                        )
+                    }
+                }
+            } else {
+                items(jobs, key = { it.id }) { job ->
+                    val bookmarked = ui.bookmarkedJobIds.contains(job.id)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelectJob(job.id) }
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text(job.title, style = MaterialTheme.typography.titleSmall)
+                                Text(if (bookmarked) "★" else "☆")
                             }
-                            val source = if (job.sourceUrl.isNotBlank()) job.sourceUrl else job.applyUrl
-                            if (source.isNotBlank()) {
-                                OutlinedButton(onClick = { onOpenUrl(source) }) {
-                                    Text(i18n(lang, "Source", "来源"))
+                            Text(job.company, style = MaterialTheme.typography.bodyMedium)
+                            Text(i18n(lang, "Location", "地点") + ": ${job.location}", style = MaterialTheme.typography.bodySmall)
+                            Text(i18n(lang, "Deadline", "截止") + ": ${job.deadline}", style = MaterialTheme.typography.bodySmall)
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                if (job.applyUrl.isNotBlank()) {
+                                    Button(onClick = { onOpenUrl(job.applyUrl) }) {
+                                        Text(i18n(lang, "Apply", "投递"))
+                                    }
+                                }
+                                OutlinedButton(onClick = { onToggleBookmark(job.id) }) {
+                                    Text(if (bookmarked) i18n(lang, "Unsave", "取消收藏") else i18n(lang, "Save", "收藏"))
                                 }
                             }
                         }
@@ -206,6 +293,48 @@ private fun JobsScreen(
             }
         }
     }
+}
+
+@Composable
+private fun JobDetailDialog(
+    lang: LanguageMode,
+    job: UiJobItem,
+    bookmarked: Boolean,
+    onDismiss: () -> Unit,
+    onApply: () -> Unit,
+    onOpenSource: () -> Unit,
+    onBookmark: () -> Unit,
+    onTrack: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(job.title) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(job.company)
+                Text(i18n(lang, "Location", "地点") + ": ${job.location}")
+                Text(i18n(lang, "Deadline", "截止") + ": ${job.deadline}")
+                if (job.applyUrl.isNotBlank()) {
+                    Text(i18n(lang, "Apply URL", "投递链接") + ": ${job.applyUrl}")
+                }
+            }
+        },
+        confirmButton = {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = onTrack) { Text(i18n(lang, "Track", "加入流程")) }
+                TextButton(onClick = onBookmark) {
+                    Text(if (bookmarked) i18n(lang, "Unsave", "取消收藏") else i18n(lang, "Save", "收藏"))
+                }
+                TextButton(onClick = onApply) { Text(i18n(lang, "Apply", "投递")) }
+            }
+        },
+        dismissButton = {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = onOpenSource) { Text(i18n(lang, "Source", "来源")) }
+                TextButton(onClick = onDismiss) { Text(i18n(lang, "Close", "关闭")) }
+            }
+        }
+    )
 }
 
 @Composable
@@ -327,6 +456,7 @@ private fun SettingsScreen(
     onThemeMode: (ThemeMode) -> Unit,
     onLanguageMode: (LanguageMode) -> Unit,
     onAutoUpdate: (Boolean) -> Unit,
+    onCrawlerImportLimit: (Int) -> Unit,
     onCheckUpdates: () -> Unit,
     onOpenRelease: (String) -> Unit,
 ) {
@@ -373,9 +503,29 @@ private fun SettingsScreen(
                 Text(
                     i18n(
                         lang,
-                        "Language mode currently affects app UI text. System-level locale switching can be added later.",
-                        "当前语言切换先作用于应用内文案，系统级 Locale 切换后续可接入。"
+                        "Language mode currently affects app UI text. Full app locale persistence can be added next.",
+                        "当前语言切换已影响应用文案；下个版本可补系统级 Locale 持久化。"
                     ),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(i18n(lang, "Crawler Import Scale", "抓取导入规模"), style = MaterialTheme.typography.titleSmall)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(50, 100, 200).forEach { limit ->
+                        val selected = ui.crawlerImportLimit == limit
+                        if (selected) {
+                            Button(onClick = { onCrawlerImportLimit(limit) }) { Text(limit.toString()) }
+                        } else {
+                            OutlinedButton(onClick = { onCrawlerImportLimit(limit) }) { Text(limit.toString()) }
+                        }
+                    }
+                }
+                Text(
+                    i18n(lang, "Current limit", "当前导入上限") + ": ${ui.crawlerImportLimit}",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

@@ -5,10 +5,12 @@ Kotlin + Jetpack Compose client.
 ## Current Status
 
 - Bottom navigation: Jobs / Pipeline / Settings
-- Interactive Pipeline dashboard (stage filter, quick actions, add form)
+- Interactive Compose screens with clickable cards and dialogs
 - API integration wired for `/api/v1/applications`, `/api/v1/jobs`, `/api/v1/companies`
-- Jobs tab supports crawler import trigger and apply/source link jump
-- Settings tab supports theme mode, language mode, update check and release jump
+- Jobs tab: keyword + city filters, bookmark, detail dialog, apply/source link jump
+- Jobs tab supports crawler import trigger (with configurable import size)
+- Pipeline tab: stage filter + quick actions + add form
+- Settings tab: theme mode, language mode, auto-update toggle, update check and release jump
 - Falls back to demo data when backend is unreachable
 
 ## Build (Android Studio)
@@ -27,6 +29,6 @@ gradle :app:assembleDebug
 
 ## Next Steps
 
-1. Add Retrofit + Kotlinx serialization client
-2. Replace sample dashboard data with backend API data
-3. Add create/edit flow for applications and interview rounds
+1. Persist settings (theme/language/bookmarks) with DataStore
+2. Add job detail page with richer fields (salary, tags, skill requirements)
+3. Connect review queue management UI (approve/reject manually)
