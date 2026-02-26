@@ -36,3 +36,35 @@ data class ApiOverview(
     @SerialName("interviewsThisWeek") val interviewsThisWeek: Int,
     @SerialName("pendingReviews") val pendingReviews: Int,
 )
+
+@Serializable
+data class ApiCompany(
+    val id: Long,
+    val name: String,
+)
+
+@Serializable
+data class ApiJobPosting(
+    val id: Long,
+    @SerialName("companyId") val companyId: Long,
+    val title: String,
+    val location: String? = null,
+    @SerialName("sourceUrl") val sourceUrl: String? = null,
+    @SerialName("applyUrl") val applyUrl: String? = null,
+    @SerialName("deadlineAt") val deadlineAt: String? = null,
+    val status: String,
+)
+
+@Serializable
+data class ApiReviewQueueItem(
+    val id: Long,
+    @SerialName("sourceType") val sourceType: String,
+    val payload: Map<String, String>,
+    val status: String,
+)
+
+@Serializable
+data class ApiCrawlerRunResult(
+    @SerialName("scannedCompanies") val scannedCompanies: Int,
+    @SerialName("queuedItems") val queuedItems: Int,
+)

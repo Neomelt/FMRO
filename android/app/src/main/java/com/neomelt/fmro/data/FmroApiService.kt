@@ -11,6 +11,12 @@ interface FmroApiService {
     @GET("api/v1/overview")
     suspend fun overview(): ApiOverview
 
+    @GET("api/v1/companies")
+    suspend fun companies(): List<ApiCompany>
+
+    @GET("api/v1/jobs")
+    suspend fun jobs(): List<ApiJobPosting>
+
     @GET("api/v1/applications")
     suspend fun applications(@Query("stage") stage: String? = null): List<ApiApplication>
 
@@ -22,4 +28,13 @@ interface FmroApiService {
         @Path("id") id: Long,
         @Body request: ApiUpdateApplicationRequest,
     ): ApiApplication
+
+    @POST("api/v1/crawler/run")
+    suspend fun runCrawler(): ApiCrawlerRunResult
+
+    @GET("api/v1/review-queue")
+    suspend fun reviewQueue(@Query("status") status: String? = null): List<ApiReviewQueueItem>
+
+    @POST("api/v1/review-queue/{id}/approve")
+    suspend fun approveReview(@Path("id") id: Long): ApiJobPosting
 }
