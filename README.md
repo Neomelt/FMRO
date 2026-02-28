@@ -2,55 +2,44 @@
 
 Find Much Robot Offer.
 
-FMRO is a personal job-ops system for robotics internship hunting:
-- Track company opportunities and deadlines
-- Manage interview stages and results
-- Visualize progress (kanban + timeline)
-- Ingest company career pages with human-in-the-loop review
+FMRO is now a Python-first local crawler + web dashboard for robotics internship hunting.
 
-## Monorepo Layout
+## Current Architecture
 
-- `backend/` Ktor API + crawler scheduler
-- `infra/` PostgreSQL schema and migration seed
-- `docs/` product and engineering docs (`PRD.md`, `ARCHITECTURE.md`, `API.md`, `SETUP.md`)
-- `android/` Android app plan and module notes
+- `pc/` Python crawler, local SQLite storage, CLI, Streamlit web UI
+- `backend/` legacy Kotlin backend (kept for reference)
+- `docs/` product and engineering notes
+- `infra/` legacy schema/migration assets
 
-## Quick Start (Backend)
+## Quick Start (Current)
 
 ```bash
-cd backend
-./gradlew run
+cd pc
+UV_CACHE_DIR=/tmp/uv-cache uv sync --extra dev
+UV_CACHE_DIR=/tmp/uv-cache uv run fmro db init
+UV_CACHE_DIR=/tmp/uv-cache uv run fmro crawl run --config companies.yaml
+UV_CACHE_DIR=/tmp/uv-cache uv run streamlit run fmro_pc/web/app.py
 ```
 
-Then open `http://localhost:8080/health`.
+Open the Streamlit URL shown in terminal (usually `http://localhost:8501`).
 
-## Local Setup
-
-See `docs/SETUP.md` for PostgreSQL + backend startup.
-
-## API Smoke Test
+## CLI Examples
 
 ```bash
-./scripts/smoke_api.sh
+cd pc
+UV_CACHE_DIR=/tmp/uv-cache uv run fmro jobs list --unapplied --sort updated_at
+UV_CACHE_DIR=/tmp/uv-cache uv run fmro jobs mark-applied --id 42
+UV_CACHE_DIR=/tmp/uv-cache uv run fmro export csv --out output/jobs.csv
+UV_CACHE_DIR=/tmp/uv-cache uv run fmro export md --out output/jobs.md
 ```
-
-## Android Dev Loop (Ubuntu/Windows/macOS)
-
-```bash
-./scripts/dev_android_loop.sh up emulator
-```
-
-See `docs/ANDROID_DEV.md` for emulator setup and USB-device workflow.
 
 ## CI/CD
 
 - CI: `FMRO/.github/workflows/ci.yml`
-- Release: tag `v*` triggers `FMRO/.github/workflows/release.yml`
+- Release: `FMRO/.github/workflows/release.yml`
 
 ## Publish to GitHub
 
 ```bash
 ./scripts/publish_to_github.sh Neomelt FMRO
 ```
-
-If the repository does not exist yet, create it first in GitHub (or set `GITHUB_TOKEN` before running the script).

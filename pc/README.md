@@ -14,6 +14,7 @@ This module is intentionally isolated under `FMRO/pc` and does not depend on `an
   - optional Playwright dynamic fallback stub
   - parser interface + `generic_html` adapter
   - normalization + fingerprint dedupe + upsert
+  - `scrapling` installed for next parser/fetcher migration
 - Commands:
   - `fmro sources list`
   - `fmro sources validate`
@@ -74,6 +75,12 @@ fmro export csv --out output/jobs.csv
 fmro export md --out output/jobs.md
 ```
 
+7. Run web dashboard
+
+```bash
+streamlit run fmro_pc/web/app.py
+```
+
 ## Optional dynamic crawl support (Playwright)
 
 ```bash
@@ -101,6 +108,8 @@ pc/
     models.py
     crawl/
     parsers/
+    services/
     storage/
+    web/app.py
   tests/
 ```

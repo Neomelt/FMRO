@@ -3,7 +3,7 @@ name: FMRO Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -16,24 +16,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
+      - uses: astral-sh/setup-uv@v3
 
-      - uses: android-actions/setup-android@v3
-
-      - uses: gradle/actions/setup-gradle@v3
-
-      - name: Build Android debug APK
-        run: ./android/gradlew -p android :app:assembleDebug
-
-      - name: Build release bundle
+      - name: Build PC package artifacts
         run: |
           mkdir -p dist
-          cp android/app/build/outputs/apk/debug/app-debug.apk dist/fmro-${GITHUB_REF_NAME}-debug.apk
+          uv sync --extra dev --project pc
+          uv run --project pc --extra dev pytest -q
           tar -czf dist/fmro-${GITHUB_REF_NAME}.tar.gz \
-            README.md docs infra backend android scripts
+            README.md docs infra backend pc scripts
 
       - name: Generate release notes
         run: |
@@ -50,8 +41,7 @@ jobs:
             git log --no-merges --pretty='- %s (%h)' "$RANGE"
             echo
             echo "## Assets"
-            echo "- \`fmro-${GITHUB_REF_NAME}-debug.apk\`: Android debug APK"
-            echo "- \`fmro-${GITHUB_REF_NAME}.tar.gz\`: Source snapshot with backend/docs/scripts"
+            echo "- \`fmro-${GITHUB_REF_NAME}.tar.gz\`: Source snapshot (PC crawler + docs)"
           } > dist/release-notes.md
 
       - name: Create GitHub Release
@@ -61,6 +51,5 @@ jobs:
           body_path: dist/release-notes.md
           files: |
             dist/fmro-${{ github.ref_name }}.tar.gz
-            dist/fmro-${{ github.ref_name }}-debug.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
