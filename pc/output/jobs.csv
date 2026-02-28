@@ -1,163 +1,18 @@
 id,company_name,title,location,source_platform,apply_url,source_url,salary_text,posted_at,is_active,bookmarked,applied,notes,updated_at
-162,Python Software Foundation,Privacy Notice,,career_page,https://policies.python.org/python.org/Privacy-Notice/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-161,Python Software Foundation,Legal Statements,,career_page,https://www.python.org/about/legal/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-160,Python Software Foundation,Python Software Foundation,,career_page,https://www.python.org/psf-landing/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-159,Python Software Foundation,Status,,career_page,https://status.python.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-158,Python Software Foundation,Submit Website Bug,,career_page,https://github.com/python/pythondotorg/issues,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-157,Python Software Foundation,Diversity Initiatives,,career_page,https://www.python.org/community/diversity/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-156,Python Software Foundation,Help & General Contact,,career_page,https://www.python.org/about/help/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-155,Python Software Foundation,Report a Security Issue,,career_page,https://www.python.org/dev/security/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-154,Python Software Foundation,Core Mentorship,,career_page,https://www.python.org/dev/core-mentorship/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-153,Python Software Foundation,python-dev list,,career_page,https://mail.python.org/mailman/listinfo/python-dev,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-152,Python Software Foundation,Issue Tracker,,career_page,https://github.com/python/cpython/issues,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-151,Python Software Foundation,Developer's Guide,,career_page,https://devguide.python.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-150,Python Software Foundation,Contributing,,career_page,https://www.python.org/dev/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-149,Python Software Foundation,Submit an Event,,career_page,https://wiki.python.org/moin/PythonEventsCalendar#Submitting_an_Event,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-148,Python Software Foundation,User Group Events Archive,,career_page,https://www.python.org/events/python-user-group/past/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-147,Python Software Foundation,Python Events Archive,,career_page,https://www.python.org/events/python-events/past/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-146,Python Software Foundation,User Group Events,,career_page,https://www.python.org/events/python-user-group/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-145,Python Software Foundation,Python Events,,career_page,https://www.python.org/events/python-events/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-144,Python Software Foundation,Events,,career_page,https://www.python.org/events/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-143,Python Software Foundation,News from the Community,,career_page,http://planetpython.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-142,Python Software Foundation,PyCon US News,,career_page,http://pycon.blogspot.com/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-141,Python Software Foundation,PSF News,,career_page,http://pyfound.blogspot.com/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-140,Python Software Foundation,PSF Newsletter,,career_page,https://www.python.org/psf/newsletter/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-139,Python Software Foundation,Python News,,career_page,https://www.python.org/blogs/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-138,Python Software Foundation,News,,career_page,https://www.python.org/blogs/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-137,Python Software Foundation,Software Development,,career_page,https://www.python.org/success-stories/category/software-development/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-136,Python Software Foundation,Scientific,,career_page,https://www.python.org/success-stories/category/scientific/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-135,Python Software Foundation,Government,,career_page,https://www.python.org/success-stories/category/government/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-134,Python Software Foundation,Engineering,,career_page,https://www.python.org/success-stories/category/engineering/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-133,Python Software Foundation,Education,,career_page,https://www.python.org/success-stories/category/education/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-132,Python Software Foundation,Business,,career_page,https://www.python.org/success-stories/category/business/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-131,Python Software Foundation,Arts,,career_page,https://www.python.org/success-stories/category/arts/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-130,Python Software Foundation,Success Stories,,career_page,https://www.python.org/success-stories/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-129,Python Software Foundation,Shared Stories,,career_page,https://www.python.org/psf/community-stories/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-128,Python Software Foundation,Get Involved,,career_page,https://www.python.org/psf/get-involved/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-127,Python Software Foundation,Community Awards,,career_page,https://www.python.org/community/awards,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-126,Python Software Foundation,Code of Conduct,,career_page,https://www.python.org/psf/conduct/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-125,Python Software Foundation,Python Wiki,,career_page,https://wiki.python.org/moin/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-124,Python Software Foundation,Python Logo,,career_page,https://www.python.org/community/logos/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-123,Python Software Foundation,Special Interest Groups,,career_page,https://www.python.org/community/sigs/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-122,Python Software Foundation,Python Conferences,,career_page,https://www.python.org/community/workshops/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-121,Python Software Foundation,PSF Annual Impact Report,,career_page,https://www.python.org/psf/annual-report/2024/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-120,Python Software Foundation,Forums,,career_page,https://www.python.org/community/forums/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-119,Python Software Foundation,IRC,,career_page,https://www.python.org/community/irc/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-118,Python Software Foundation,Mailing Lists,,career_page,https://www.python.org/community/lists/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-117,Python Software Foundation,Diversity,,career_page,https://www.python.org/community/diversity/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-116,Python Software Foundation,Python Essays,,career_page,https://www.python.org/doc/essays/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-115,Python Software Foundation,Python Books,,career_page,https://wiki.python.org/moin/PythonBooks,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-114,Python Software Foundation,PEP Index,,career_page,https://peps.python.org,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-113,Python Software Foundation,Non-English Docs,,career_page,https://translations.python.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-112,Python Software Foundation,FAQ,,career_page,https://docs.python.org/3/faq/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-111,Python Software Foundation,Beginner's Guide,,career_page,https://wiki.python.org/moin/BeginnersGuide,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-110,Python Software Foundation,Audio/Visual Talks,,career_page,https://www.python.org/doc/av,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-109,Python Software Foundation,Docs,,career_page,https://www.python.org/doc/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-108,Python Software Foundation,Documentation,,career_page,https://www.python.org/doc/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-107,Python Software Foundation,Alternative Implementations,,career_page,https://www.python.org/download/alternatives,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-106,Python Software Foundation,License,,career_page,https://docs.python.org/3/license.html,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-105,Python Software Foundation,Other Platforms,,career_page,https://www.python.org/download/other/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-104,Python Software Foundation,Android,,career_page,https://www.python.org/downloads/android/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-103,Python Software Foundation,macOS,,career_page,https://www.python.org/downloads/macos/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-102,Python Software Foundation,Windows,,career_page,https://www.python.org/downloads/windows/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-101,Python Software Foundation,Source code,,career_page,https://www.python.org/downloads/source/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-100,Python Software Foundation,All releases,,career_page,https://www.python.org/downloads/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-99,Python Software Foundation,Downloads,,career_page,https://www.python.org/downloads/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-98,Python Software Foundation,Python Brochure,,career_page,http://brochure.getpython.info/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-97,Python Software Foundation,Help,,career_page,https://www.python.org/about/help/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-96,Python Software Foundation,Getting Started,,career_page,https://www.python.org/about/gettingstarted/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-95,Python Software Foundation,Quotes,,career_page,https://www.python.org/about/quotes/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-94,Python Software Foundation,Applications,,career_page,https://www.python.org/about/apps/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-93,Python Software Foundation,About,,career_page,https://www.python.org/about/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-92,Python Software Foundation,▲ Back to Top,,career_page,https://www.python.org/jobs/#python-network,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-91,Python Software Foundation,Follow The PSF via Twitter,,career_page,https://twitter.com/ThePSF,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-90,Python Software Foundation,Subscribe via RSS,,career_page,https://www.python.org/jobs/feed/rss/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-89,Python Software Foundation,PSF Python Job Board team,,career_page,mailto:jobs@python.org,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-88,Python Software Foundation,logging in now,,career_page,https://www.python.org/accounts/login/?next=/jobs/mine/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-87,Python Software Foundation,login and use this form,,career_page,https://www.python.org/accounts/login/?next=/jobs/create/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-86,Python Software Foundation,how-to document,,career_page,https://www.python.org/community/jobs/howto/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-85,Python Software Foundation,job submission how-to,,career_page,https://www.python.org/community/jobs/howto/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-84,Python Software Foundation,"Boston, MA, United States of America",,career_page,https://www.python.org/jobs/location/boston-ma-united-states-of-america/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-83,Python Software Foundation,Staff Software Engineer,,career_page,https://www.python.org/jobs/8009/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-82,Python Software Foundation,"Remote, United States",,career_page,https://www.python.org/jobs/location/remote-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-81,Python Software Foundation,Python / Django Developer,,career_page,https://www.python.org/jobs/8010/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-80,Python Software Foundation,"Toronto, Ontario, Canada",,career_page,https://www.python.org/jobs/location/toronto-ontario-canada/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-79,Python Software Foundation,"Director, Ratings AI",,career_page,https://www.python.org/jobs/8011/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-78,Python Software Foundation,"Remote, Remote, United Kingdom",,career_page,https://www.python.org/jobs/location/remote-remote-united-kingdom/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-77,Python Software Foundation,AI Engineer,,career_page,https://www.python.org/jobs/8013/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-76,Python Software Foundation,"London, ---, United Kingdom",,career_page,https://www.python.org/jobs/location/london-united-kingdom/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-75,Python Software Foundation,Founding Full-Stack Senior Engineer (UK ONLY) - Fully Remote,,career_page,https://www.python.org/jobs/8014/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-74,Python Software Foundation,"São Paulo, São Paulo, Brazil",,career_page,https://www.python.org/jobs/location/sao-paulo-sao-paulo-brazil/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-73,Python Software Foundation,Senior Python Developer,,career_page,https://www.python.org/jobs/8019/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-72,Python Software Foundation,"Bengaluru, Karnataka, India",,career_page,https://www.python.org/jobs/location/bengaluru-karnataka-india/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-71,Python Software Foundation,Senior Backend Python Developer,,career_page,https://www.python.org/jobs/8024/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-70,Python Software Foundation,"Cambridge, Massachusetts, United States",,career_page,https://www.python.org/jobs/location/cambridge-massachusetts-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-69,Python Software Foundation,Senior Data Privacy Software Developer,,career_page,https://www.python.org/jobs/8025/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-68,Python Software Foundation,"Fully remote, East Coast Preferred, United States",,career_page,https://www.python.org/jobs/location/fully-remote-east-coast-preferred-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-67,Python Software Foundation,Senior Software Engineer,,career_page,https://www.python.org/jobs/8027/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-66,Python Software Foundation,"Canton, OH, USA",,career_page,https://www.python.org/jobs/location/canton-oh-usa/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-65,Python Software Foundation,Senior Python Backend Developer,,career_page,https://www.python.org/jobs/8030/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-64,Python Software Foundation,"Remote, Remote, United States",,career_page,https://www.python.org/jobs/location/remote-remote-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-63,Python Software Foundation,Junior Full Stack Developer,,career_page,https://www.python.org/jobs/8031/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-62,Python Software Foundation,"San Francisco, CA, USA",,career_page,https://www.python.org/jobs/location/san-francisco-ca-usa/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-61,Python Software Foundation,Junior Software Engineer,,career_page,https://www.python.org/jobs/8032/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-60,Python Software Foundation,"Hamburg, Germany",,career_page,https://www.python.org/jobs/location/hamburg-germany/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-59,Python Software Foundation,Senior Full-Stack Engineer (remote),,career_page,https://www.python.org/jobs/8033/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-58,Python Software Foundation,Senior Back-End Python Engineer - FULLY REMOTE-WORLDWIDE,,career_page,https://www.python.org/jobs/8039/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-57,Python Software Foundation,"Mountain View, California, United States",,career_page,https://www.python.org/jobs/location/mountain-view-california-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-56,Python Software Foundation,"DevOps Engineer-FULLY REMOTE-US, CANADA, EUROPE only",,career_page,https://www.python.org/jobs/8040/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-55,Python Software Foundation,"Garland, TX, United States",,career_page,https://www.python.org/jobs/location/garland-tx-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-54,Python Software Foundation,Senior Python Engineer (backend focused),,career_page,https://www.python.org/jobs/8041/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-53,Python Software Foundation,"Remote, USA",,career_page,https://www.python.org/jobs/location/remote-usa/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-52,Python Software Foundation,Infrastructure Engineer,,career_page,https://www.python.org/jobs/8044/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-51,Python Software Foundation,Submit,,career_page,https://www.python.org/jobs/create/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-50,Python Software Foundation,"Toronto, Ontario – Canada",,career_page,https://www.python.org/jobs/location/toronto-ontario-canada/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-49,Python Software Foundation,"São Paulo, São Paulo – Brazil",,career_page,https://www.python.org/jobs/location/sao-paulo-sao-paulo-brazil/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-48,Python Software Foundation,"San Francisco, CA – USA",,career_page,https://www.python.org/jobs/location/san-francisco-ca-usa/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-47,Python Software Foundation,Remote – USA,,career_page,https://www.python.org/jobs/location/remote-usa/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-46,Python Software Foundation,Remote – United States,,career_page,https://www.python.org/jobs/location/remote-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-45,Python Software Foundation,Remote – United States,,career_page,https://www.python.org/jobs/location/remote-remote-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-44,Python Software Foundation,Remote – United Kingdom,,career_page,https://www.python.org/jobs/location/remote-remote-united-kingdom/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-43,Python Software Foundation,"Mountain View, California – United States",,career_page,https://www.python.org/jobs/location/mountain-view-california-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-42,Python Software Foundation,"London, --- – United Kingdom",,career_page,https://www.python.org/jobs/location/london-united-kingdom/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-41,Python Software Foundation,Hamburg – Germany,,career_page,https://www.python.org/jobs/location/hamburg-germany/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-40,Python Software Foundation,"Garland, TX – United States",,career_page,https://www.python.org/jobs/location/garland-tx-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-39,Python Software Foundation,"Fully remote, East Coast Preferred – United States",,career_page,https://www.python.org/jobs/location/fully-remote-east-coast-preferred-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-38,Python Software Foundation,"Canton, OH – USA",,career_page,https://www.python.org/jobs/location/canton-oh-usa/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-37,Python Software Foundation,"Cambridge, Massachusetts – United States",,career_page,https://www.python.org/jobs/location/cambridge-massachusetts-united-states/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-36,Python Software Foundation,"Boston, MA – United States of America",,career_page,https://www.python.org/jobs/location/boston-ma-united-states-of-america/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-35,Python Software Foundation,"Bengaluru, Karnataka – India",,career_page,https://www.python.org/jobs/location/bengaluru-karnataka-india/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-34,Python Software Foundation,Telecommute,,career_page,https://www.python.org/jobs/location/telecommute/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-33,Python Software Foundation,Locations,,career_page,https://www.python.org/jobs/locations/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-32,Python Software Foundation,Developer / Engineer,,career_page,https://www.python.org/jobs/category/developer-engineer/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-31,Python Software Foundation,Categories,,career_page,https://www.python.org/jobs/categories/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-30,Python Software Foundation,Web,,career_page,https://www.python.org/jobs/type/web/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-29,Python Software Foundation,Testing,,career_page,https://www.python.org/jobs/type/testing/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-28,Python Software Foundation,Systems,,career_page,https://www.python.org/jobs/type/systems/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-27,Python Software Foundation,Operations,,career_page,https://www.python.org/jobs/type/operations/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-26,Python Software Foundation,Numeric processing,,career_page,https://www.python.org/jobs/type/numeric-processing/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-25,Python Software Foundation,Machine Learning,,career_page,https://www.python.org/jobs/type/machine-learning/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-24,Python Software Foundation,Lead,,career_page,https://www.python.org/jobs/type/lead/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-23,Python Software Foundation,Front end,,career_page,https://www.python.org/jobs/type/front-end/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-22,Python Software Foundation,Finance,,career_page,https://www.python.org/jobs/type/finance/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-21,Python Software Foundation,Database,,career_page,https://www.python.org/jobs/type/database/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-20,Python Software Foundation,Cloud,,career_page,https://www.python.org/jobs/type/cloud/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-19,Python Software Foundation,Back end,,career_page,https://www.python.org/jobs/type/back-end/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-18,Python Software Foundation,Types,,career_page,https://www.python.org/jobs/types/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-17,Python Software Foundation,Twitter,,career_page,https://twitter.com/ThePSF,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-16,Python Software Foundation,Chat on IRC,,career_page,https://www.python.org/community/irc/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-15,Python Software Foundation,Mastodon,,career_page,https://fosstodon.org/@ThePSF,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-14,Python Software Foundation,LinkedIn,,career_page,https://www.linkedin.com/company/python-software-foundation/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-13,Python Software Foundation,Socialize,,career_page,https://www.python.org/jobs/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-12,Python Software Foundation,A A,,career_page,https://www.python.org/jobs/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-11,Python Software Foundation,≡ Menu,,career_page,https://www.python.org/jobs/#site-map,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-10,Python Software Foundation,Donate,,career_page,https://donate.python.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-9,Python Software Foundation,▲ The Python Network,,career_page,https://www.python.org/jobs/#top,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-8,Python Software Foundation,Community,,career_page,https://www.python.org/community/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-7,Python Software Foundation,Jobs,,career_page,https://www.python.org/jobs/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-6,Python Software Foundation,PyPI,,career_page,https://pypi.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-5,Python Software Foundation,Docs,,career_page,https://docs.python.org,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-4,Python Software Foundation,PSF,,career_page,https://www.python.org/psf/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-3,Python Software Foundation,Python,,career_page,https://www.python.org/,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-2,Python Software Foundation,▼ Close,,career_page,https://www.python.org/jobs/#python-network,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
-1,Python Software Foundation,Skip to content,,career_page,https://www.python.org/jobs/#content,https://www.python.org/jobs/,,,True,False,False,,2026-02-28T12:56:01.873505
+17,实习僧,/算法实习（定位/建图/位姿估方向）,,shixiseng,https://www.shixiseng.com/intern/inn_6s00iw66uphh?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+16,实习僧,【】 / 算法实习(),,shixiseng,https://www.shixiseng.com/intern/inn_grs1uvvcmsec?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+15,实习僧,无机开发实习,,shixiseng,https://www.shixiseng.com/intern/inn_dmygudwjdejy?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+14,实习僧,实习,,shixiseng,https://www.shixiseng.com/intern/inn_r45av3gnt3zl?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+13,实习僧,算法实习,,shixiseng,https://www.shixiseng.com/intern/inn_leopqwcgnfoe?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+12,实习僧,算法实习,,shixiseng,https://www.shixiseng.com/intern/inn_ap1zdtchs1yr?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+11,实习僧,/实习,,shixiseng,https://www.shixiseng.com/intern/inn_dshmxs9czra2?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=slam,,,True,False,False,,2026-02-28T15:07:39.302486
+10,实习僧,实习,,shixiseng,https://www.shixiseng.com/intern/inn_pmvzpiptibam?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+9,实习僧,文案实习,,shixiseng,https://www.shixiseng.com/intern/inn_47ykc2tkoyoj?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+8,实习僧,产品文案及平面管理实习（英语）,,shixiseng,https://www.shixiseng.com/intern/inn_xx9rytiorvzy?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+7,实习僧,机器实习,,shixiseng,https://www.shixiseng.com/intern/inn_12bftzju4uif?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+6,实习僧,导航算法实习,,shixiseng,https://www.shixiseng.com/intern/inn_iuxgo1qizymy?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+5,实习僧,务实习,,shixiseng,https://www.shixiseng.com/intern/inn_5dleevhlxjxh?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+4,实习僧,项目助理实习,,shixiseng,https://www.shixiseng.com/intern/inn_kv42eodt1ldc?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+3,实习僧,机器控制算法,,shixiseng,https://www.shixiseng.com/intern/inn_vpan3aqgeuzv?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+2,实习僧,机器实习,,shixiseng,https://www.shixiseng.com/intern/inn_u1zzki28dbnl?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
+1,实习僧,机器调试实习,,shixiseng,https://www.shixiseng.com/intern/inn_vdamxgf1tr0d?pcm=pc_SearchList,https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA,,,True,False,False,,2026-02-28T15:07:39.302486
