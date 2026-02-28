@@ -11,6 +11,18 @@ from fmro_pc.crawl.normalize import matches_source_filters, normalize_job
 from fmro_pc.parsers.registry import get_parser
 from fmro_pc.storage.repository import UpsertStats, upsert_jobs
 
+RISK_PLATFORMS = {"boss_zhipin", "liepin", "shixiseng"}
+BLOCK_HINTS = [
+    "验证码",
+    "安全验证",
+    "行为验证",
+    "访问受限",
+    "滑动验证",
+    "人机验证",
+    "请完成验证",
+    "captcha",
+]
+
 
 @dataclass
 class SourceRunSummary:
@@ -64,6 +76,16 @@ def _should_use_dynamic(source: SourceConfig, force_dynamic: bool) -> bool:
     return source.mode == "dynamic"
 
 
+def _looks_like_block_page(html: str) -> bool:
+    content = html.lower()
+    return any(hint in content for hint in BLOCK_HINTS)
+
+
+def _has_cookie_header(source: SourceConfig) -> bool:
+    headers = source.request_headers or {}
+    return any(key.lower() == "cookie" and value.strip() for key, value in headers.items())
+
+
 def run_crawl(
     session: Session,
     config: CompaniesConfig,
@@ -107,6 +129,13 @@ def run_crawl(
 
                 source_summary.pages_fetched += 1
 
+                if _looks_like_block_page(page.html):
+                    source_summary.errors.append(
+                        f"blocked by anti-bot for {url} (captcha/verification detected)"
+                    )
+                    source_summary.parse_failures += 1
+                    continue
+
                 try:
                     parsed_jobs = parser.parse(page, source)
                 except Exception as exc:
@@ -134,6 +163,16 @@ def run_crawl(
                 normalized_jobs,
                 source_key=source.key,
             )
+
+            if (
+                source.platform in RISK_PLATFORMS
+                and source_summary.jobs_extracted == 0
+                and not _has_cookie_header(source)
+            ):
+                source_summary.errors.append(
+                    "no jobs extracted; this platform often needs login Cookie in request_headers"
+                )
+
             source_summaries.append(source_summary)
 
     return CrawlSummary(

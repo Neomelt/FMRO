@@ -59,6 +59,9 @@ fmro crawl run --config companies.yaml --dynamic
 ```
 
 如果平台页面需要登录态（Boss/猎聘/实习僧常见），在 `companies.yaml` 的 `request_headers.Cookie` 填入浏览器 Cookie。
+可以参考模板：`cookie.template.yaml`。
+
+抓取时如果遇到验证码/风控页面，日志会提示：`blocked by anti-bot ...`。
 
 5. Query jobs
 

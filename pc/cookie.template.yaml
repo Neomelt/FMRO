@@ -1,0 +1,13 @@
+# Copy needed Cookie values into companies.yaml -> request_headers.Cookie
+#
+# How to get Cookie quickly:
+# 1) Open target site in Chrome and login.
+# 2) Press F12 -> Network -> refresh page.
+# 3) Click any request to the same domain.
+# 4) Copy request header: Cookie
+# 5) Paste into companies.yaml for the matching source.
+
+cookies:
+  boss_robot_search: "__zp_stoken__=...; wt2=...; wbg=..."
+  liepin_robot_search: "XSRF-TOKEN=...; acw_tc=...; __gc_id=..."
+  shixiseng_robot_search: "sxsid=...; _ga=...; _gid=..."
