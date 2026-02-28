@@ -24,47 +24,85 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
     if platform == "boss_zhipin":
         script = """
 () => {
-  const selectors = [
+  const rows = [];
+
+  const anchorSelectors = [
     'a[href*="/job_detail/"]',
     '.job-card-wrapper a',
     '.job-list-box a',
     'a[ka*="job"]',
     'a[href*="zhipin.com"]'
   ];
-  const selected = selectors.flatMap(s => Array.from(document.querySelectorAll(s)));
-  const anchors = Array.from(new Set(selected));
-  return anchors.map(a => {
+  const pickedAnchors = anchorSelectors.flatMap(
+    s => Array.from(document.querySelectorAll(s))
+  );
+  const anchors = Array.from(new Set(pickedAnchors));
+  for (const a of anchors) {
     const card = a.closest('li,div,section,article') || a.parentElement;
     const title = (a.getAttribute('title') || a.textContent || '').trim();
     const text = (card?.textContent || '').trim();
     let href = a.href || a.getAttribute('href') || '';
     const jid = a.getAttribute('data-jid') || a.dataset?.jid || '';
-    if (!href && jid) {
-      href = `https://www.zhipin.com/job_detail/${jid}.html`;
-    }
-    return { title, href, text };
-  });
+    if (!href && jid) href = `https://www.zhipin.com/job_detail/${jid}.html`;
+    rows.push({ title, href, text });
+  }
+
+  const cardSelectors = ['.job-card-wrapper', '.search-job-result li', 'li.job-card-wrapper'];
+  const pickedCards = cardSelectors.flatMap(
+    s => Array.from(document.querySelectorAll(s))
+  );
+  const cards = Array.from(new Set(pickedCards));
+  for (const card of cards) {
+    const titleEl = card.querySelector('[class*="title"], [class*="job-name"], h2, h3, a');
+    const title = (titleEl?.getAttribute('title') || titleEl?.textContent || '').trim();
+    const linkEl = card.querySelector('a[href]');
+    const href = (linkEl?.href || linkEl?.getAttribute('href') || '').trim();
+    const text = (card.textContent || '').trim();
+    rows.push({ title, href, text });
+  }
+
+  return rows;
 }
 """
     elif platform == "liepin":
         script = """
 () => {
-  const selectors = [
+  const rows = [];
+
+  const anchorSelectors = [
     'a[href*="/job/"]',
     '.job-card a',
     '.job-list-item a',
     'a[data-nick="job-detail"]',
     'a[href*="liepin.com/job"]'
   ];
-  const selected = selectors.flatMap(s => Array.from(document.querySelectorAll(s)));
-  const anchors = Array.from(new Set(selected));
-  return anchors.map(a => {
+  const pickedAnchors = anchorSelectors.flatMap(
+    s => Array.from(document.querySelectorAll(s))
+  );
+  const anchors = Array.from(new Set(pickedAnchors));
+  for (const a of anchors) {
     const card = a.closest('li,div,section,article') || a.parentElement;
     const title = (a.getAttribute('title') || a.textContent || '').trim();
     const text = (card?.textContent || '').trim();
     const href = a.href || a.getAttribute('href') || '';
-    return { title, href, text };
-  });
+    rows.push({ title, href, text });
+  }
+
+  const cardSelectors = ['.job-list-item', '.job-card-pc-container', '.job-card'];
+  const pickedCards = cardSelectors.flatMap(
+    s => Array.from(document.querySelectorAll(s))
+  );
+  const cards = Array.from(new Set(pickedCards));
+  for (const card of cards) {
+    const titleEl = card.querySelector('[class*="title"], [class*="job"], h2, h3, a');
+    const title = (titleEl?.getAttribute('title') || titleEl?.textContent || '').trim();
+    const linkEl = card.querySelector('a[href]');
+    const href = (linkEl?.href || linkEl?.getAttribute('href') || '').trim();
+    const text = (card.textContent || '').trim();
+    rows.push({ title, href, text });
+  }
+
+  return rows;
 }
 """
     elif platform == "shixiseng":
@@ -100,16 +138,19 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
     for row in rows:
         title = (row.get("title") or "").strip()
         href = (row.get("href") or "").strip()
-        if len(title) < 4 or not href:
+        if len(title) < 4:
             continue
-        if href in seen:
+
+        apply_url = urljoin(page.url, href) if href else page.url
+        dedupe_key = f"{title}|{apply_url}"
+        if dedupe_key in seen:
             continue
-        seen.add(href)
+        seen.add(dedupe_key)
 
         parsed.append(
             ParsedJob(
                 title=title,
-                apply_url=urljoin(page.url, href),
+                apply_url=apply_url,
                 source_url=page.url,
                 description_text=(row.get("text") or "").strip() or None,
                 tags=[source.platform],
