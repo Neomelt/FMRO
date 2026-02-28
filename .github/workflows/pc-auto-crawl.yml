@@ -23,19 +23,49 @@ jobs:
           uv sync --extra dev --extra dynamic
           uv run --extra dynamic playwright install chromium
 
-      - name: Build cookies.local.yaml from secrets (optional)
+      - name: Build cookies.local.yaml from secrets fallback (optional)
         working-directory: pc
         env:
           BOSS_COOKIE: ${{ secrets.BOSS_COOKIE }}
           LIEPIN_COOKIE: ${{ secrets.LIEPIN_COOKIE }}
           SHIXISENG_COOKIE: ${{ secrets.SHIXISENG_COOKIE }}
         run: |
-          cat > cookies.local.yaml <<EOF
-          cookies:
-            boss_robot_search: "${BOSS_COOKIE}"
-            liepin_robot_search: "${LIEPIN_COOKIE}"
-            shixiseng_robot_search: "${SHIXISENG_COOKIE}"
-          EOF
+          uv run python - <<'PY'
+          import json
+          from pathlib import Path
+
+          json_path = Path('cookies.json')
+          payload = {}
+          if json_path.exists():
+              try:
+                  payload = json.loads(json_path.read_text(encoding='utf-8'))
+              except Exception:
+                  payload = {}
+
+          cookies = payload.get('cookies', {}) if isinstance(payload, dict) else {}
+          if not isinstance(cookies, dict):
+              cookies = {}
+
+          boss = (cookies.get('boss_robot_search') or '').strip() or ("""${BOSS_COOKIE}""".strip())
+          liepin = (cookies.get('liepin_robot_search') or '').strip() or ("""${LIEPIN_COOKIE}""".strip())
+          shixiseng = (cookies.get('shixiseng_robot_search') or '').strip() or ("""${SHIXISENG_COOKIE}""".strip())
+
+          local = {
+              'cookies': {
+                  'boss_robot_search': boss,
+                  'liepin_robot_search': liepin,
+                  'shixiseng_robot_search': shixiseng,
+              }
+          }
+          Path('cookies.local.yaml').write_text(
+              "cookies:\n"
+              f"  boss_robot_search: \"{boss}\"\n"
+              f"  liepin_robot_search: \"{liepin}\"\n"
+              f"  shixiseng_robot_search: \"{shixiseng}\"\n",
+              encoding='utf-8',
+          )
+          print('cookies.local.yaml generated (priority: cookies.json > secrets)')
+          PY
 
       - name: Run crawl and export
         working-directory: pc

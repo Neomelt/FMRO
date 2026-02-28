@@ -68,6 +68,7 @@ fmro crawl live --config companies.yaml --source boss_robot_search --session-dir
 可以参考模板：`cookie.template.yaml`。
 
 你也可以直接把 Cookie 填进 `cookies.json`（适合私有仓库图省事）。
+GitHub Action 会优先读取 `cookies.json`，为空时再回退到仓库 secrets。
 
 也可以自动采集 Cookie（推荐）：
 
