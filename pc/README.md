@@ -58,6 +58,8 @@ fmro db init
 fmro crawl run --config companies.yaml --dynamic
 # 或者不用浏览器动态引擎，优先走 scrapling:
 fmro crawl run --config companies.yaml --engine scrapling
+# 反爬最强时用人工登录接管抓取（推荐 Boss/猎聘/实习僧）:
+fmro crawl live --config companies.yaml --source boss_robot_search
 ```
 
 如果平台页面需要登录态（Boss/猎聘/实习僧常见），在 `companies.yaml` 的 `request_headers.Cookie` 填入浏览器 Cookie。

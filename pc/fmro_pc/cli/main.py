@@ -8,6 +8,7 @@ import yaml
 from pydantic import ValidationError
 
 from fmro_pc.config import CompaniesConfig, load_companies_config
+from fmro_pc.crawl.live_browser import crawl_live
 from fmro_pc.crawl.runner import run_crawl
 from fmro_pc.database import init_db, resolve_db_path, session_scope
 from fmro_pc.parsers.registry import PARSER_REGISTRY, get_parser
@@ -147,6 +148,35 @@ def crawl_run(
             f"dupes={source_summary.upsert.duplicates_skipped}"
         )
         for error in source_summary.errors:
+            typer.echo(f"    ! {error}")
+
+
+@crawl_app.command("live")
+def crawl_live_command(
+    config: Path = typer.Option(Path("companies.yaml"), "--config", help="Path to companies.yaml"),
+    db: Path = typer.Option(None, "--db", help="SQLite database path"),
+    source: str | None = typer.Option(None, "--source", help="Single source key to crawl"),
+    max_scroll_rounds: int = typer.Option(8, "--scroll-rounds", min=1, max=30),
+) -> None:
+    cfg = _load_config_or_exit(config)
+    init_db(db)
+
+    with session_scope(db) as session:
+        results = crawl_live(
+            session,
+            cfg,
+            source_key=source,
+            max_scroll_rounds=max_scroll_rounds,
+        )
+
+    typer.echo("Live crawl complete")
+    for result in results:
+        typer.echo(
+            f"  [{result.source_key}] extracted={result.extracted} normalized={result.normalized} "
+            f"inserted={result.upsert.inserted} updated={result.upsert.updated} "
+            f"deactivated={result.upsert.deactivated} dupes={result.upsert.duplicates_skipped}"
+        )
+        for error in result.errors[:8]:
             typer.echo(f"    ! {error}")
 
 
