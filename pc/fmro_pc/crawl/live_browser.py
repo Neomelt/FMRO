@@ -18,6 +18,21 @@ class LiveSourceResult:
     errors: list[str]
 
 
+def _safe_eval_rows(page, script: str) -> list[dict]:
+    last_exc = None
+    for _ in range(3):
+        try:
+            page.wait_for_load_state("domcontentloaded", timeout=5000)
+            rows = page.evaluate(script)
+            if isinstance(rows, list):
+                return rows
+            return []
+        except Exception as exc:  # noqa: BLE001
+            last_exc = exc
+            page.wait_for_timeout(400)
+    raise RuntimeError(f"evaluate failed after retries: {last_exc}")
+
+
 def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
     platform = source.platform
 
@@ -132,10 +147,9 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
 }
 """
 
-    rows = page.evaluate(script)
+    rows = _safe_eval_rows(page, script)
     if platform == "boss_zhipin" and not rows:
-        rows = page.evaluate(
-            """
+        fallback_script = """
 () => {
   const selectors = '[class*="job-name"], [class*="job-title"], h2, h3';
   const titles = Array.from(document.querySelectorAll(selectors));
@@ -149,7 +163,7 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
   });
 }
 """
-        )
+        rows = _safe_eval_rows(page, fallback_script)
 
     parsed: list[ParsedJob] = []
     seen: set[str] = set()
