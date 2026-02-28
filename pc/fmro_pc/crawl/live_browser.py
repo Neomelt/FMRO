@@ -24,12 +24,24 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
     if platform == "boss_zhipin":
         script = """
 () => {
-  const cards = Array.from(document.querySelectorAll('a[href*="/job_detail/"]'));
-  return cards.map(a => {
+  const selectors = [
+    'a[href*="/job_detail/"]',
+    '.job-card-wrapper a',
+    '.job-list-box a',
+    'a[ka*="job"]',
+    'a[href*="zhipin.com"]'
+  ];
+  const selected = selectors.flatMap(s => Array.from(document.querySelectorAll(s)));
+  const anchors = Array.from(new Set(selected));
+  return anchors.map(a => {
     const card = a.closest('li,div,section,article') || a.parentElement;
     const title = (a.getAttribute('title') || a.textContent || '').trim();
     const text = (card?.textContent || '').trim();
-    const href = a.href || a.getAttribute('href') || '';
+    let href = a.href || a.getAttribute('href') || '';
+    const jid = a.getAttribute('data-jid') || a.dataset?.jid || '';
+    if (!href && jid) {
+      href = `https://www.zhipin.com/job_detail/${jid}.html`;
+    }
     return { title, href, text };
   });
 }
@@ -37,8 +49,16 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
     elif platform == "liepin":
         script = """
 () => {
-  const cards = Array.from(document.querySelectorAll('a[href*="/job/"]'));
-  return cards.map(a => {
+  const selectors = [
+    'a[href*="/job/"]',
+    '.job-card a',
+    '.job-list-item a',
+    'a[data-nick="job-detail"]',
+    'a[href*="liepin.com/job"]'
+  ];
+  const selected = selectors.flatMap(s => Array.from(document.querySelectorAll(s)));
+  const anchors = Array.from(new Set(selected));
+  return anchors.map(a => {
     const card = a.closest('li,div,section,article') || a.parentElement;
     const title = (a.getAttribute('title') || a.textContent || '').trim();
     const text = (card?.textContent || '').trim();
@@ -141,6 +161,10 @@ def crawl_live(
                         normalized.append(item)
                 except Exception as exc:  # noqa: BLE001
                     errors.append(str(exc))
+
+            if extracted and not normalized:
+                preview = ", ".join(job.title[:20] for job in extracted[:5])
+                errors.append(f"all extracted jobs were filtered out, sample titles: {preview}")
 
             upsert = upsert_jobs(session, normalized, source_key=source.key)
             results.append(
