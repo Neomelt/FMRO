@@ -23,11 +23,25 @@ jobs:
           uv sync --extra dev --extra dynamic
           uv run --extra dynamic playwright install chromium
 
+      - name: Build cookies.local.yaml from secrets (optional)
+        working-directory: pc
+        env:
+          BOSS_COOKIE: ${{ secrets.BOSS_COOKIE }}
+          LIEPIN_COOKIE: ${{ secrets.LIEPIN_COOKIE }}
+          SHIXISENG_COOKIE: ${{ secrets.SHIXISENG_COOKIE }}
+        run: |
+          cat > cookies.local.yaml <<EOF
+          cookies:
+            boss_robot_search: "${BOSS_COOKIE}"
+            liepin_robot_search: "${LIEPIN_COOKIE}"
+            shixiseng_robot_search: "${SHIXISENG_COOKIE}"
+          EOF
+
       - name: Run crawl and export
         working-directory: pc
         run: |
           uv run fmro db init --db data/fmro_pc.db
-          uv run fmro crawl run --config companies.yaml --db data/fmro_pc.db --dynamic
+          uv run fmro crawl run --config companies.yaml --db data/fmro_pc.db --dynamic --engine auto
           uv run fmro export csv --db data/fmro_pc.db --out output/jobs.csv
           uv run fmro export md --db data/fmro_pc.db --out output/jobs.md
 

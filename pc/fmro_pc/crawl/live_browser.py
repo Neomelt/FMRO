@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from urllib.parse import urljoin
 
 from fmro_pc.config import CompaniesConfig, SourceConfig, select_sources
@@ -197,6 +198,8 @@ def crawl_live(
     *,
     source_key: str | None = None,
     max_scroll_rounds: int = 8,
+    session_dir: str | Path = "data/sessions",
+    force_login: bool = False,
 ) -> list[LiveSourceResult]:
     try:
         from playwright.sync_api import sync_playwright
@@ -206,24 +209,34 @@ def crawl_live(
     sources = select_sources(config, source_key=source_key, only_enabled=True)
     results: list[LiveSourceResult] = []
 
+    session_root = Path(session_dir)
+    session_root.mkdir(parents=True, exist_ok=True)
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
-        context = browser.new_context()
 
         for source in sources:
             errors: list[str] = []
             all_extracted: list[ParsedJob] = []
             normalized: list = []
+
+            state_path = session_root / f"{source.key}.json"
+            storage_state = str(state_path) if state_path.exists() and not force_login else None
+            context = browser.new_context(storage_state=storage_state)
             page = context.new_page()
 
             try:
                 seed_url = source.entry_urls[0]
                 page.goto(seed_url, wait_until="domcontentloaded", timeout=30000)
-                prompt = (
-                    f"[{source.key}] 请在浏览器中确认已登录并看到职位列表，"
-                    "完成后回终端按 Enter 开始抓取..."
-                )
-                input(prompt)
+
+                if storage_state is None:
+                    prompt = (
+                        f"[{source.key}] 请在浏览器中确认已登录并看到职位列表，"
+                        "完成后回终端按 Enter 开始抓取..."
+                    )
+                    input(prompt)
+                    context.storage_state(path=str(state_path))
+                    errors.append(f"session saved: {state_path}")
 
                 for url in source.entry_urls:
                     try:
@@ -258,6 +271,7 @@ def crawl_live(
                 errors.append(f"live crawl fatal error: {exc}")
             finally:
                 page.close()
+                context.close()
 
             upsert = upsert_jobs(session, normalized, source_key=source.key)
             results.append(

@@ -157,6 +157,16 @@ def crawl_live_command(
     db: Path = typer.Option(None, "--db", help="SQLite database path"),
     source: str | None = typer.Option(None, "--source", help="Single source key to crawl"),
     max_scroll_rounds: int = typer.Option(8, "--scroll-rounds", min=1, max=30),
+    session_dir: Path = typer.Option(
+        Path("data/sessions"),
+        "--session-dir",
+        help="Browser session state directory",
+    ),
+    force_login: bool = typer.Option(
+        False,
+        "--force-login",
+        help="Ignore saved session and login again",
+    ),
 ) -> None:
     cfg = _load_config_or_exit(config)
     init_db(db)
@@ -167,6 +177,8 @@ def crawl_live_command(
             cfg,
             source_key=source,
             max_scroll_rounds=max_scroll_rounds,
+            session_dir=session_dir,
+            force_login=force_login,
         )
 
     typer.echo("Live crawl complete")

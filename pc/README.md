@@ -60,6 +60,8 @@ fmro crawl run --config companies.yaml --dynamic
 fmro crawl run --config companies.yaml --engine scrapling
 # 反爬最强时用人工登录接管抓取（推荐 Boss/猎聘/实习僧）:
 fmro crawl live --config companies.yaml --source boss_robot_search
+# 首次登录后会保存会话到 data/sessions，下次可免登录复用
+fmro crawl live --config companies.yaml --source boss_robot_search --session-dir data/sessions
 ```
 
 如果平台页面需要登录态（Boss/猎聘/实习僧常见），在 `companies.yaml` 的 `request_headers.Cookie` 填入浏览器 Cookie。
@@ -72,6 +74,9 @@ uv run fmro auth capture-cookie --source boss_robot_search --config companies.ya
 ```
 
 这会打开浏览器，你手动登录后回终端按回车，Cookie 会写入 `cookies.local.yaml`（已忽略，不会提交）。
+
+`crawl live` 也会把浏览器会话自动保存到 `data/sessions/<source>.json`，默认下次自动复用；
+若要重新登录，用 `--force-login`。
 
 抓取时如果遇到验证码/风控页面，日志会提示：`blocked by anti-bot ...`。
 
