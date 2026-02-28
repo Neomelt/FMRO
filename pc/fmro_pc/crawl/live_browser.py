@@ -198,46 +198,52 @@ def crawl_live(
 
         for source in sources:
             errors: list[str] = []
+            all_extracted: list[ParsedJob] = []
+            normalized: list = []
             page = context.new_page()
 
-            seed_url = source.entry_urls[0]
-            page.goto(seed_url, wait_until="domcontentloaded", timeout=30000)
-            prompt = (
-                f"[{source.key}] 请在浏览器中确认已登录并看到职位列表，"
-                "完成后回终端按 Enter 开始抓取..."
-            )
-            input(prompt)
+            try:
+                seed_url = source.entry_urls[0]
+                page.goto(seed_url, wait_until="domcontentloaded", timeout=30000)
+                prompt = (
+                    f"[{source.key}] 请在浏览器中确认已登录并看到职位列表，"
+                    "完成后回终端按 Enter 开始抓取..."
+                )
+                input(prompt)
 
-            all_extracted: list[ParsedJob] = []
-            for url in source.entry_urls:
-                try:
-                    page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(f"goto failed for {url}: {exc}")
-                    continue
+                for url in source.entry_urls:
+                    try:
+                        page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                    except Exception as exc:  # noqa: BLE001
+                        errors.append(f"goto failed for {url}: {exc}")
+                        continue
 
-                for _ in range(max_scroll_rounds):
-                    page.mouse.wheel(0, 4500)
-                    page.wait_for_timeout(700)
+                    for _ in range(max_scroll_rounds):
+                        page.mouse.wheel(0, 4500)
+                        page.wait_for_timeout(700)
 
-                batch = _extract_jobs_for_source(page, source)
-                all_extracted.extend(batch)
-                if not batch:
-                    title = page.title()
-                    errors.append(f"no rows extracted on {url} (page title: {title})")
+                    batch = _extract_jobs_for_source(page, source)
+                    all_extracted.extend(batch)
+                    if not batch:
+                        title = page.title()
+                        errors.append(f"no rows extracted on {url} (page title: {title})")
 
-            normalized = []
-            for job in all_extracted:
-                try:
-                    item = normalize_job(job, source)
-                    if matches_source_filters(item, source):
-                        normalized.append(item)
-                except Exception as exc:  # noqa: BLE001
-                    errors.append(str(exc))
+                for job in all_extracted:
+                    try:
+                        item = normalize_job(job, source)
+                        if matches_source_filters(item, source):
+                            normalized.append(item)
+                    except Exception as exc:  # noqa: BLE001
+                        errors.append(str(exc))
 
-            if all_extracted and not normalized:
-                preview = ", ".join(job.title[:20] for job in all_extracted[:5])
-                errors.append(f"all extracted jobs were filtered out, sample titles: {preview}")
+                if all_extracted and not normalized:
+                    preview = ", ".join(job.title[:20] for job in all_extracted[:5])
+                    errors.append(f"all extracted jobs were filtered out, sample titles: {preview}")
+
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"live crawl fatal error: {exc}")
+            finally:
+                page.close()
 
             upsert = upsert_jobs(session, normalized, source_key=source.key)
             results.append(
@@ -249,7 +255,6 @@ def crawl_live(
                     errors=errors,
                 )
             )
-            page.close()
 
         browser.close()
 
