@@ -24,6 +24,21 @@ class ScraplingFetcher:
             )
         }
 
+    def _decode_body(self, body: bytes | str, encoding: str | None) -> str:
+        if isinstance(body, str):
+            return body
+
+        candidates = [encoding, "utf-8", "gb18030", "gbk", "big5"]
+        for enc in candidates:
+            if not enc:
+                continue
+            try:
+                return body.decode(enc)
+            except Exception:
+                continue
+
+        return body.decode("utf-8", errors="replace")
+
     def fetch(self, url: str, headers: dict[str, str] | None = None) -> FetchedPage:
         try:
             from scrapling import Fetcher
@@ -43,10 +58,8 @@ class ScraplingFetcher:
             raise RuntimeError(f"scrapling returned status {status_code} for {url}")
 
         body = getattr(response, "body", b"")
-        if isinstance(body, bytes):
-            html = body.decode("utf-8", errors="ignore")
-        else:
-            html = str(body)
+        encoding = getattr(response, "encoding", None)
+        html = self._decode_body(body, encoding)
 
         final_url = str(getattr(response, "url", url))
         soup = BeautifulSoup(html, "html.parser")
