@@ -75,6 +75,41 @@ class CompaniesConfig(BaseModel):
         return self
 
 
+def _load_cookie_overrides(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    cookies = raw.get("cookies", {})
+    if not isinstance(cookies, dict):
+        return {}
+    normalized: dict[str, str] = {}
+    for key, value in cookies.items():
+        k = str(key).strip()
+        v = str(value).strip()
+        if k and v:
+            normalized[k] = v
+    return normalized
+
+
+def _apply_cookie_overrides(config: CompaniesConfig, overrides: dict[str, str]) -> CompaniesConfig:
+    if not overrides:
+        return config
+
+    sources: list[SourceConfig] = []
+    for source in config.sources:
+        cookie = overrides.get(source.key)
+        if not cookie:
+            sources.append(source)
+            continue
+
+        headers = dict(source.request_headers)
+        if not any(k.lower() == "cookie" for k in headers):
+            headers["Cookie"] = cookie
+        sources.append(source.model_copy(update={"request_headers": headers}))
+
+    return CompaniesConfig(sources=sources)
+
+
 def load_companies_config(path: str | Path = "companies.yaml") -> CompaniesConfig:
     config_path = Path(path)
     if not config_path.exists():
@@ -82,9 +117,13 @@ def load_companies_config(path: str | Path = "companies.yaml") -> CompaniesConfi
 
     raw = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     try:
-        return CompaniesConfig.model_validate(raw)
+        config = CompaniesConfig.model_validate(raw)
     except ValidationError as exc:
         raise ValueError(f"invalid companies config: {exc}") from exc
+
+    local_cookie_path = config_path.parent / "cookies.local.yaml"
+    cookie_overrides = _load_cookie_overrides(local_cookie_path)
+    return _apply_cookie_overrides(config, cookie_overrides)
 
 
 def select_sources(

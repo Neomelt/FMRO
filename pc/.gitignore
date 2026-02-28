@@ -17,3 +17,5 @@ output/*
 data/*
 !data/.gitkeep
 !data/fmro_pc.db
+
+cookies.local.yaml

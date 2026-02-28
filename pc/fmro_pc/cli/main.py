@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal
 
 import typer
+import yaml
 from pydantic import ValidationError
 
 from fmro_pc.config import CompaniesConfig, load_companies_config
@@ -20,12 +21,14 @@ crawl_app = typer.Typer(help="Run crawling pipeline")
 jobs_app = typer.Typer(help="Query and update stored jobs")
 export_app = typer.Typer(help="Export jobs")
 db_app = typer.Typer(help="Database helpers")
+auth_app = typer.Typer(help="Auth/session helpers for cookie capture")
 
 app.add_typer(sources_app, name="sources")
 app.add_typer(crawl_app, name="crawl")
 app.add_typer(jobs_app, name="jobs")
 app.add_typer(export_app, name="export")
 app.add_typer(db_app, name="db")
+app.add_typer(auth_app, name="auth")
 
 
 def _load_config_or_exit(path: Path) -> CompaniesConfig:
@@ -293,6 +296,70 @@ def export_markdown_command(
         )
 
     typer.echo(f"Exported {row_count} row(s) to {out}")
+
+
+@auth_app.command("capture-cookie")
+def auth_capture_cookie(
+    source: str = typer.Option(..., "--source", help="Source key in companies.yaml"),
+    config: Path = typer.Option(Path("companies.yaml"), "--config", help="Path to companies.yaml"),
+) -> None:
+    cfg = _load_config_or_exit(config)
+    target = next((s for s in cfg.sources if s.key == source), None)
+    if target is None:
+        typer.secho(f"source '{source}' not found", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
+    login_url = target.entry_urls[0]
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        typer.secho("Playwright not installed. Run: uv sync --extra dynamic", fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(f"Opening browser for source={source}")
+    typer.echo(f"Please login manually in the opened page: {login_url}")
+    typer.echo("After login completed, return to terminal and press Enter.")
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(login_url, wait_until="domcontentloaded")
+        input()
+        cookies = context.cookies()
+        browser.close()
+
+    domain_keys = ["zhipin.com", "liepin.com", "shixiseng.com"]
+    pick_domain = next((d for d in domain_keys if d in login_url), None)
+
+    parts: list[str] = []
+    for item in cookies:
+        domain = item.get("domain", "")
+        if pick_domain and pick_domain not in domain:
+            continue
+        name = item.get("name", "").strip()
+        value = item.get("value", "").strip()
+        if name and value:
+            parts.append(f"{name}={value}")
+
+    if not parts:
+        typer.secho("No usable cookies captured. Try login again.", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
+    cookie_line = "; ".join(parts)
+    cookie_path = config.parent / "cookies.local.yaml"
+    raw = {}
+    if cookie_path.exists():
+        raw = yaml.safe_load(cookie_path.read_text(encoding="utf-8")) or {}
+    if "cookies" not in raw or not isinstance(raw.get("cookies"), dict):
+        raw["cookies"] = {}
+    raw["cookies"][source] = cookie_line
+    dumped = yaml.safe_dump(raw, sort_keys=False, allow_unicode=True)
+    cookie_path.write_text(dumped, encoding="utf-8")
+
+    typer.secho(f"Cookie saved to {cookie_path}", fg=typer.colors.GREEN)
+    typer.echo("You can now run crawl with --dynamic.")
 
 
 if __name__ == "__main__":

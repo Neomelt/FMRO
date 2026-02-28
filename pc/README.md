@@ -61,6 +61,14 @@ fmro crawl run --config companies.yaml --dynamic
 如果平台页面需要登录态（Boss/猎聘/实习僧常见），在 `companies.yaml` 的 `request_headers.Cookie` 填入浏览器 Cookie。
 可以参考模板：`cookie.template.yaml`。
 
+也可以自动采集 Cookie（推荐）：
+
+```bash
+uv run fmro auth capture-cookie --source boss_robot_search --config companies.yaml
+```
+
+这会打开浏览器，你手动登录后回终端按回车，Cookie 会写入 `cookies.local.yaml`（已忽略，不会提交）。
+
 抓取时如果遇到验证码/风控页面，日志会提示：`blocked by anti-bot ...`。
 
 5. Query jobs

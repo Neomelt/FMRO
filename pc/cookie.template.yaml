@@ -11,3 +11,8 @@ cookies:
   boss_robot_search: "__zp_stoken__=...; wt2=...; wbg=..."
   liepin_robot_search: "XSRF-TOKEN=...; acw_tc=...; __gc_id=..."
   shixiseng_robot_search: "sxsid=...; _ga=...; _gid=..."
+
+# 推荐：把真实 Cookie 放到 cookies.local.yaml（已加入 .gitignore，不会提交）
+# 示例：
+# cookies:
+#   boss_robot_search: "xxx=...; yyy=..."
