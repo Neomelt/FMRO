@@ -108,6 +108,11 @@ def crawl_run(
     dynamic: bool = typer.Option(
         False, "--dynamic", help="Force dynamic fetch mode for all sources"
     ),
+    engine: Literal["auto", "scrapling", "static"] = typer.Option(
+        "auto",
+        "--engine",
+        help="Static fetch engine when not dynamic: auto|scrapling|static",
+    ),
 ) -> None:
     cfg = _load_config_or_exit(config)
     init_db(db)
@@ -119,6 +124,7 @@ def crawl_run(
             source_key=source,
             limit=limit,
             force_dynamic=dynamic,
+            engine=engine,
         )
 
     typer.echo("Crawl run complete")

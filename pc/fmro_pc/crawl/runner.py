@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from fmro_pc.config import CompaniesConfig, SourceConfig, select_sources
 from fmro_pc.crawl.browser import PlaywrightFetcher
-from fmro_pc.crawl.fetcher import StaticFetcher
+from fmro_pc.crawl.fetcher import ScraplingFetcher, StaticFetcher
 from fmro_pc.crawl.normalize import matches_source_filters, normalize_job
 from fmro_pc.parsers.registry import get_parser
 from fmro_pc.storage.repository import UpsertStats, upsert_jobs
@@ -93,11 +93,16 @@ def run_crawl(
     source_key: str | None = None,
     limit: int | None = None,
     force_dynamic: bool = False,
+    engine: str = "auto",
 ) -> CrawlSummary:
+    if engine not in {"auto", "scrapling", "static"}:
+        raise ValueError("engine must be one of: auto, scrapling, static")
+
     sources = select_sources(config, source_key=source_key, only_enabled=True)
     source_summaries: list[SourceRunSummary] = []
 
     dynamic_fetcher = PlaywrightFetcher()
+    scrapling_fetcher = ScraplingFetcher()
     with StaticFetcher() as static_fetcher:
         for source in sources:
             source_summary = SourceRunSummary(source_key=source.key)
@@ -116,16 +121,29 @@ def run_crawl(
                         page = dynamic_fetcher.fetch(url, headers=headers)
                     except Exception as exc:
                         source_summary.errors.append(
-                            f"dynamic fetch failed for {url}: {exc}; falling back to static"
+                            f"dynamic fetch failed for {url}: {exc}; falling back"
                         )
 
-                if page is None:
+                if page is None and engine in {"auto", "scrapling"}:
+                    try:
+                        page = scrapling_fetcher.fetch(url, headers=headers)
+                    except Exception as exc:
+                        source_summary.errors.append(
+                            f"scrapling fetch failed for {url}: {exc}; falling back"
+                        )
+
+                if page is None and engine in {"auto", "static"}:
                     try:
                         page = static_fetcher.fetch(url, headers=headers)
                     except Exception as exc:
                         source_summary.errors.append(f"static fetch failed for {url}: {exc}")
                         source_summary.parse_failures += 1
                         continue
+
+                if page is None:
+                    source_summary.parse_failures += 1
+                    source_summary.errors.append(f"no fetch engine succeeded for {url}")
+                    continue
 
                 source_summary.pages_fetched += 1
 

@@ -56,6 +56,8 @@ fmro db init
 
 ```bash
 fmro crawl run --config companies.yaml --dynamic
+# 或者不用浏览器动态引擎，优先走 scrapling:
+fmro crawl run --config companies.yaml --engine scrapling
 ```
 
 如果平台页面需要登录态（Boss/猎聘/实习僧常见），在 `companies.yaml` 的 `request_headers.Cookie` 填入浏览器 Cookie。
