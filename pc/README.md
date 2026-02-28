@@ -18,8 +18,12 @@ This module is intentionally isolated under `FMRO/pc` and does not depend on `an
   - `fmro sources list`
   - `fmro sources validate`
   - `fmro crawl run`
-  - `fmro jobs list`
+  - `fmro jobs list` (with `--unapplied` and `--sort posted_at|updated_at`)
+  - `fmro jobs mark-applied --id ID`
+  - `fmro jobs bookmark --id ID --on/--off`
+  - `fmro jobs note --id ID --text "..."`
   - `fmro export csv`
+  - `fmro export md`
 - Basic tests for dedupe and normalize
 
 ## Quickstart
@@ -57,12 +61,17 @@ fmro crawl run --config companies.yaml
 ```bash
 fmro jobs list --keyword python --limit 20
 fmro jobs list --city Shanghai --platform career_page
+fmro jobs list --unapplied --sort updated_at
+fmro jobs mark-applied --id 42
+fmro jobs bookmark --id 42 --on
+fmro jobs note --id 42 --text "Applied via referral on LinkedIn"
 ```
 
-6. Export CSV
+6. Export data
 
 ```bash
 fmro export csv --out output/jobs.csv
+fmro export md --out output/jobs.md
 ```
 
 ## Optional dynamic crawl support (Playwright)

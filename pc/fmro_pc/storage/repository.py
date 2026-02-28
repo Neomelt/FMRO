@@ -4,6 +4,7 @@ import csv
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Literal
 
 from sqlalchemy import or_
 from sqlmodel import Session, select
@@ -22,6 +23,10 @@ class UpsertStats:
     updated: int = 0
     deactivated: int = 0
     duplicates_skipped: int = 0
+
+
+JobSortField = Literal["posted_at", "updated_at"]
+SUPPORTED_SORT_FIELDS: tuple[JobSortField, ...] = ("posted_at", "updated_at")
 
 
 def upsert_jobs(
@@ -110,14 +115,18 @@ def list_jobs(
     city: str | None = None,
     keyword: str | None = None,
     platform: str | None = None,
+    unapplied_only: bool = False,
     active_only: bool = True,
-    sort: str = "posted_at",
+    sort: JobSortField = "posted_at",
     limit: int = 100,
 ) -> list[JobPosting]:
     stmt = select(JobPosting)
 
     if active_only:
         stmt = stmt.where(JobPosting.is_active.is_(True))
+
+    if unapplied_only:
+        stmt = stmt.where(JobPosting.applied.is_(False))
 
     if city:
         stmt = stmt.where(JobPosting.location.is_not(None), JobPosting.location.ilike(f"%{city}%"))
@@ -135,28 +144,61 @@ def list_jobs(
     if platform:
         stmt = stmt.where(JobPosting.source_platform == platform)
 
-    sort_fields = {
+    sort_fields: dict[JobSortField, object] = {
         "posted_at": JobPosting.posted_at,
-        "last_seen_at": JobPosting.last_seen_at,
         "updated_at": JobPosting.updated_at,
-        "created_at": JobPosting.created_at,
-        "title": JobPosting.title,
-        "company": JobPosting.company_name,
     }
     sort_column = sort_fields.get(sort)
     if sort_column is None:
-        supported = ", ".join(sorted(sort_fields))
+        supported = ", ".join(SUPPORTED_SORT_FIELDS)
         raise ValueError(f"unsupported sort field '{sort}'. Supported: {supported}")
 
-    if sort in {"title", "company"}:
-        stmt = stmt.order_by(sort_column.asc())
-    else:
-        stmt = stmt.order_by(sort_column.desc())
+    stmt = stmt.order_by(sort_column.desc(), JobPosting.id.desc())
 
     if limit > 0:
         stmt = stmt.limit(limit)
 
     return list(session.exec(stmt).all())
+
+
+def mark_job_applied(session: Session, *, job_id: int) -> JobPosting | None:
+    row = session.get(JobPosting, job_id)
+    if row is None:
+        return None
+
+    row.applied = True
+    row.updated_at = utcnow()
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    return row
+
+
+def set_job_bookmark(session: Session, *, job_id: int, bookmarked: bool) -> JobPosting | None:
+    row = session.get(JobPosting, job_id)
+    if row is None:
+        return None
+
+    row.bookmarked = bookmarked
+    row.updated_at = utcnow()
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    return row
+
+
+def set_job_note(session: Session, *, job_id: int, note: str | None) -> JobPosting | None:
+    row = session.get(JobPosting, job_id)
+    if row is None:
+        return None
+
+    normalized = note.strip() if note else ""
+    row.notes = normalized or None
+    row.updated_at = utcnow()
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    return row
 
 
 def export_jobs_csv(
@@ -220,4 +262,68 @@ def export_jobs_csv(
                 }
             )
 
+    return len(jobs)
+
+
+def _format_date(value: datetime | None) -> str:
+    if value is None:
+        return "-"
+    return value.date().isoformat()
+
+
+def _markdown_clean(value: str | None) -> str:
+    if not value:
+        return "-"
+    return " ".join(value.split())
+
+
+def export_jobs_markdown(
+    session: Session,
+    out_path: str | Path,
+    *,
+    city: str | None = None,
+    keyword: str | None = None,
+    platform: str | None = None,
+    unapplied_only: bool = False,
+) -> int:
+    jobs = list_jobs(
+        session,
+        city=city,
+        keyword=keyword,
+        platform=platform,
+        unapplied_only=unapplied_only,
+        active_only=True,
+        sort="updated_at",
+        limit=0,
+    )
+
+    lines = ["# FMRO Jobs", "", f"Total jobs: {len(jobs)}"]
+    generated_at = utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    lines.append(f"Generated at: {generated_at}")
+    lines.append("")
+
+    if not jobs:
+        lines.append("_No active jobs matched the current filters._")
+    else:
+        for row in jobs:
+            lines.extend(
+                [
+                    f"## {row.company_name} - {row.title}",
+                    f"- ID: {row.id}",
+                    f"- Location: {_markdown_clean(row.location)}",
+                    f"- Platform: {row.source_platform}",
+                    f"- Posted: {_format_date(row.posted_at)}",
+                    f"- Updated: {_format_date(row.updated_at)}",
+                    f"- Applied: {'yes' if row.applied else 'no'}",
+                    f"- Bookmarked: {'yes' if row.bookmarked else 'no'}",
+                    f"- Apply: {row.apply_url}",
+                    f"- Source: {row.source_url}",
+                    f"- Note: {_markdown_clean(row.notes)}",
+                    "",
+                ]
+            )
+
+    path = Path(out_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
     return len(jobs)

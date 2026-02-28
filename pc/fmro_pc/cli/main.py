@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import typer
 from pydantic import ValidationError
@@ -9,13 +10,14 @@ from fmro_pc.config import CompaniesConfig, load_companies_config
 from fmro_pc.crawl.runner import run_crawl
 from fmro_pc.database import init_db, resolve_db_path, session_scope
 from fmro_pc.parsers.registry import PARSER_REGISTRY, get_parser
-from fmro_pc.storage.repository import export_jobs_csv, list_jobs
+from fmro_pc.services.export import export_csv, export_markdown
+from fmro_pc.services.jobs import mark_applied, query_jobs, set_bookmark, set_note
 
 app = typer.Typer(help="FMRO PC crawler", no_args_is_help=True)
 
 sources_app = typer.Typer(help="Inspect or validate companies sources")
 crawl_app = typer.Typer(help="Run crawling pipeline")
-jobs_app = typer.Typer(help="List stored jobs")
+jobs_app = typer.Typer(help="Query and update stored jobs")
 export_app = typer.Typer(help="Export jobs")
 db_app = typer.Typer(help="Database helpers")
 
@@ -147,32 +149,30 @@ def jobs_list(
         None, "--keyword", help="Keyword in title/company/description"
     ),
     platform: str | None = typer.Option(None, "--platform", help="Filter by source platform"),
+    unapplied: bool = typer.Option(False, "--unapplied", help="Show only unapplied jobs"),
     include_inactive: bool = typer.Option(
         False, "--include-inactive", help="Show inactive jobs too"
     ),
-    sort: str = typer.Option(
+    sort: Literal["posted_at", "updated_at"] = typer.Option(
         "posted_at",
         "--sort",
-        help="Sort field: posted_at,last_seen_at,updated_at,created_at,title,company",
+        help="Sort field: posted_at|updated_at",
     ),
     limit: int = typer.Option(50, "--limit", min=1),
 ) -> None:
     init_db(db)
 
     with session_scope(db) as session:
-        try:
-            rows = list_jobs(
-                session,
-                city=city,
-                keyword=keyword,
-                platform=platform,
-                active_only=not include_inactive,
-                sort=sort,
-                limit=limit,
-            )
-        except ValueError as exc:
-            typer.secho(str(exc), fg=typer.colors.RED)
-            raise typer.Exit(code=1) from exc
+        rows = query_jobs(
+            session,
+            city=city,
+            keyword=keyword,
+            platform=platform,
+            unapplied=unapplied,
+            include_inactive=include_inactive,
+            sort=sort,
+            limit=limit,
+        )
 
     if not rows:
         typer.echo("No jobs found.")
@@ -191,8 +191,62 @@ def jobs_list(
         )
 
 
+@jobs_app.command("mark-applied")
+def jobs_mark_applied(
+    id: int = typer.Option(..., "--id", min=1, help="Job ID"),
+    db: Path = typer.Option(None, "--db", help="SQLite database path"),
+) -> None:
+    init_db(db)
+
+    with session_scope(db) as session:
+        try:
+            row = mark_applied(session, job_id=id)
+        except ValueError as exc:
+            typer.secho(str(exc), fg=typer.colors.RED)
+            raise typer.Exit(code=1) from exc
+
+    typer.echo(f"Job {row.id} marked as applied.")
+
+
+@jobs_app.command("bookmark")
+def jobs_bookmark(
+    id: int = typer.Option(..., "--id", min=1, help="Job ID"),
+    on: bool = typer.Option(True, "--on/--off", help="Toggle bookmark state"),
+    db: Path = typer.Option(None, "--db", help="SQLite database path"),
+) -> None:
+    init_db(db)
+
+    with session_scope(db) as session:
+        try:
+            row = set_bookmark(session, job_id=id, enabled=on)
+        except ValueError as exc:
+            typer.secho(str(exc), fg=typer.colors.RED)
+            raise typer.Exit(code=1) from exc
+
+    state = "bookmarked" if row.bookmarked else "unbookmarked"
+    typer.echo(f"Job {row.id} {state}.")
+
+
+@jobs_app.command("note")
+def jobs_note(
+    id: int = typer.Option(..., "--id", min=1, help="Job ID"),
+    text: str = typer.Option(..., "--text", help="Note text"),
+    db: Path = typer.Option(None, "--db", help="SQLite database path"),
+) -> None:
+    init_db(db)
+
+    with session_scope(db) as session:
+        try:
+            row = set_note(session, job_id=id, text=text)
+        except ValueError as exc:
+            typer.secho(str(exc), fg=typer.colors.RED)
+            raise typer.Exit(code=1) from exc
+
+    typer.echo(f"Job {row.id} note updated.")
+
+
 @export_app.command("csv")
-def export_csv(
+def export_csv_command(
     out: Path = typer.Option(..., "--out", help="Output CSV path"),
     db: Path = typer.Option(None, "--db", help="SQLite database path"),
     city: str | None = typer.Option(None, "--city", help="Filter by city substring"),
@@ -204,12 +258,38 @@ def export_csv(
     init_db(db)
 
     with session_scope(db) as session:
-        row_count = export_jobs_csv(
+        row_count = export_csv(
             session,
             out_path=out,
             city=city,
             keyword=keyword,
             platform=platform,
+        )
+
+    typer.echo(f"Exported {row_count} row(s) to {out}")
+
+
+@export_app.command("md")
+def export_markdown_command(
+    out: Path = typer.Option(..., "--out", help="Output Markdown path"),
+    db: Path = typer.Option(None, "--db", help="SQLite database path"),
+    city: str | None = typer.Option(None, "--city", help="Filter by city substring"),
+    keyword: str | None = typer.Option(
+        None, "--keyword", help="Keyword in title/company/description"
+    ),
+    platform: str | None = typer.Option(None, "--platform", help="Filter by source platform"),
+    unapplied: bool = typer.Option(False, "--unapplied", help="Export only unapplied jobs"),
+) -> None:
+    init_db(db)
+
+    with session_scope(db) as session:
+        row_count = export_markdown(
+            session,
+            out_path=out,
+            city=city,
+            keyword=keyword,
+            platform=platform,
+            unapplied=unapplied,
         )
 
     typer.echo(f"Exported {row_count} row(s) to {out}")
