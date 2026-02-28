@@ -1,0 +1,32 @@
+sources:
+  - key: python_jobs
+    company_name: Python Software Foundation
+    enabled: true
+    platform: career_page
+    entry_urls:
+      - "https://www.python.org/jobs/"
+    mode: static
+    parser: generic_html
+    include_keywords: []
+    exclude_keywords: []
+    city_allowlist: []
+    crawl_depth: 1
+    notes: "Sample static source"
+
+  - key: example_dynamic_source
+    company_name: Example Corp
+    enabled: false
+    platform: career_page
+    entry_urls:
+      - "https://example.com/careers"
+    mode: dynamic
+    parser: generic_html
+    include_keywords:
+      - "intern"
+    exclude_keywords:
+      - "senior architect"
+    city_allowlist:
+      - "Beijing"
+      - "Shanghai"
+    crawl_depth: 1
+    notes: "Disabled sample dynamic source"

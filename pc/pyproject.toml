@@ -1,0 +1,41 @@
+[project]
+name = "fmro-pc"
+version = "0.1.0"
+description = "PC-first local crawler and job tracker for FMRO"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "beautifulsoup4>=4.12.0",
+  "httpx>=0.27.0",
+  "pydantic>=2.6.0",
+  "pyyaml>=6.0.0",
+  "sqlmodel>=0.0.16",
+  "typer>=0.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+  "ruff>=0.6.0",
+]
+dynamic = [
+  "playwright>=1.40.0",
+]
+
+[project.scripts]
+fmro = "fmro_pc.cli.main:app"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
