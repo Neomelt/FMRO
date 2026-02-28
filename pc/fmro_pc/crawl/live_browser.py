@@ -133,6 +133,24 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
 """
 
     rows = page.evaluate(script)
+    if platform == "boss_zhipin" and not rows:
+        rows = page.evaluate(
+            """
+() => {
+  const selectors = '[class*="job-name"], [class*="job-title"], h2, h3';
+  const titles = Array.from(document.querySelectorAll(selectors));
+  return titles.map(el => {
+    const card = el.closest('li,div,section,article') || el.parentElement;
+    const title = (el.textContent || '').trim();
+    const linkEl = card?.querySelector('a[href]');
+    const href = (linkEl?.href || linkEl?.getAttribute('href') || '').trim();
+    const text = (card?.textContent || '').trim();
+    return { title, href, text };
+  });
+}
+"""
+        )
+
     parsed: list[ParsedJob] = []
     seen: set[str] = set()
     for row in rows:
@@ -181,21 +199,35 @@ def crawl_live(
         for source in sources:
             errors: list[str] = []
             page = context.new_page()
-            page.goto(source.entry_urls[0], wait_until="domcontentloaded", timeout=30000)
+
+            seed_url = source.entry_urls[0]
+            page.goto(seed_url, wait_until="domcontentloaded", timeout=30000)
             prompt = (
                 f"[{source.key}] 请在浏览器中确认已登录并看到职位列表，"
                 "完成后回终端按 Enter 开始抓取..."
             )
             input(prompt)
 
-            for _ in range(max_scroll_rounds):
-                page.mouse.wheel(0, 4500)
-                page.wait_for_timeout(700)
+            all_extracted: list[ParsedJob] = []
+            for url in source.entry_urls:
+                try:
+                    page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(f"goto failed for {url}: {exc}")
+                    continue
 
-            extracted = _extract_jobs_for_source(page, source)
+                for _ in range(max_scroll_rounds):
+                    page.mouse.wheel(0, 4500)
+                    page.wait_for_timeout(700)
+
+                batch = _extract_jobs_for_source(page, source)
+                all_extracted.extend(batch)
+                if not batch:
+                    title = page.title()
+                    errors.append(f"no rows extracted on {url} (page title: {title})")
 
             normalized = []
-            for job in extracted:
+            for job in all_extracted:
                 try:
                     item = normalize_job(job, source)
                     if matches_source_filters(item, source):
@@ -203,15 +235,15 @@ def crawl_live(
                 except Exception as exc:  # noqa: BLE001
                     errors.append(str(exc))
 
-            if extracted and not normalized:
-                preview = ", ".join(job.title[:20] for job in extracted[:5])
+            if all_extracted and not normalized:
+                preview = ", ".join(job.title[:20] for job in all_extracted[:5])
                 errors.append(f"all extracted jobs were filtered out, sample titles: {preview}")
 
             upsert = upsert_jobs(session, normalized, source_key=source.key)
             results.append(
                 LiveSourceResult(
                     source_key=source.key,
-                    extracted=len(extracted),
+                    extracted=len(all_extracted),
                     normalized=len(normalized),
                     upsert=upsert,
                     errors=errors,
