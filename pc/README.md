@@ -115,6 +115,7 @@ streamlit run fmro_pc/web/app.py
   - `pc/data/fmro_pc.db`
   - `pc/output/jobs.csv`
   - `pc/output/jobs.md`
+- Also renders static website and deploys to GitHub Pages (`pc/site/index.html`)
 
 ## Optional dynamic crawl support (Playwright)
 
