@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import datetime
+from html import unescape
 
 from fmro_pc.config import SourceConfig
 from fmro_pc.crawl.dedupe import build_fingerprint
@@ -11,7 +12,8 @@ from fmro_pc.parsers.base import ParsedJob
 def _clean_text(value: str | None) -> str | None:
     if value is None:
         return None
-    cleaned = " ".join(value.strip().split())
+    decoded = unescape(value)
+    cleaned = " ".join(decoded.strip().split())
     return cleaned or None
 
 

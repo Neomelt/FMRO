@@ -6,6 +6,7 @@ from bs4.element import Tag
 
 from fmro_pc.config import SourceConfig
 from fmro_pc.crawl.fetcher import FetchedPage
+from fmro_pc.parsers._common import clean_text, infer_city, looks_like_job_title
 from fmro_pc.parsers.base import ParsedJob
 
 
@@ -22,7 +23,7 @@ class BossZhipinParser:
                 continue
 
             title = self._pick_title(anchor)
-            if not title:
+            if not looks_like_job_title(title):
                 continue
 
             apply_url = urljoin(page.url, href)
@@ -30,7 +31,8 @@ class BossZhipinParser:
                 continue
             seen.add(apply_url)
 
-            container_text = " ".join(anchor.get_text(" ", strip=True).split())
+            parent_text = anchor.parent.get_text(" ", strip=True) if anchor.parent else ""
+            container_text = clean_text(parent_text)
             location = self._pick_location(anchor)
             jobs.append(
                 ParsedJob(
@@ -46,19 +48,13 @@ class BossZhipinParser:
         return jobs
 
     def _pick_title(self, anchor: Tag) -> str | None:
-        title = anchor.get("title")
+        title = clean_text(anchor.get("title"))
         if title:
-            return " ".join(title.split())
-        text = " ".join(anchor.get_text(" ", strip=True).split())
-        return text if len(text) >= 3 else None
+            return title
+        return clean_text(anchor.get_text(" ", strip=True))
 
     def _pick_location(self, anchor: Tag) -> str | None:
         parent = anchor.parent
         if parent is None:
             return None
-        text = " ".join(parent.get_text(" ", strip=True).split())
-        cities = ["北京", "上海", "深圳", "杭州", "广州", "成都", "苏州", "南京", "武汉", "西安"]
-        for city in cities:
-            if city in text:
-                return city
-        return None
+        return infer_city(parent.get_text(" ", strip=True))
