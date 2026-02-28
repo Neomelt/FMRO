@@ -3,6 +3,7 @@
 PC-first Python crawler and local job data tool for FMRO.
 
 This module is intentionally isolated under `FMRO/pc` and does not depend on `android/` or `backend/`.
+Default sources are now focused on CN robotics channels: BOSS直聘 / 猎聘 / 实习僧 + robotics company career pages.
 
 ## Features in this milestone
 
@@ -80,6 +81,15 @@ fmro export md --out output/jobs.md
 ```bash
 streamlit run fmro_pc/web/app.py
 ```
+
+8. Auto crawl on GitHub (optional)
+
+- Workflow file: `.github/workflows/pc-auto-crawl.yml`
+- Runs every 8 hours and on manual trigger
+- Persists deduped snapshots to:
+  - `pc/data/fmro_pc.db`
+  - `pc/output/jobs.csv`
+  - `pc/output/jobs.md`
 
 ## Optional dynamic crawl support (Playwright)
 

@@ -1,32 +1,87 @@
 sources:
-  - key: python_jobs
-    company_name: Python Software Foundation
+  - key: boss_robot_search
+    company_name: BOSS直聘
+    enabled: true
+    platform: boss_zhipin
+    entry_urls:
+      - "https://www.zhipin.com/web/geek/job?query=%E6%9C%BA%E5%99%A8%E4%BA%BA"
+      - "https://www.zhipin.com/web/geek/job?query=slam"
+    mode: dynamic
+    parser: boss_zhipin
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
+    exclude_keywords: ["销售", "行政", "财务"]
+    city_allowlist: []
+    crawl_depth: 1
+    notes: "职位平台搜索页（可能触发反爬，建议登录后动态抓取）"
+
+  - key: liepin_robot_search
+    company_name: 猎聘
+    enabled: true
+    platform: liepin
+    entry_urls:
+      - "https://www.liepin.com/zhaopin/?key=%E6%9C%BA%E5%99%A8%E4%BA%BA"
+      - "https://www.liepin.com/zhaopin/?key=slam"
+    mode: dynamic
+    parser: liepin
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
+    exclude_keywords: ["销售", "行政", "财务"]
+    city_allowlist: []
+    crawl_depth: 1
+    notes: "职位平台搜索页（可能触发反爬，建议登录后动态抓取）"
+
+  - key: shixiseng_robot_search
+    company_name: 实习僧
+    enabled: true
+    platform: shixiseng
+    entry_urls:
+      - "https://www.shixiseng.com/interns?k=%E6%9C%BA%E5%99%A8%E4%BA%BA"
+      - "https://www.shixiseng.com/interns?k=slam"
+    mode: dynamic
+    parser: shixiseng
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
+    exclude_keywords: ["销售", "行政", "财务"]
+    city_allowlist: []
+    crawl_depth: 1
+    notes: "职位平台搜索页（可能触发反爬，建议登录后动态抓取）"
+
+  - key: dji_careers
+    company_name: 大疆
     enabled: true
     platform: career_page
     entry_urls:
-      - "https://www.python.org/jobs/"
-    mode: static
+      - "https://we.dji.com/zh-CN/social"
+    mode: auto
     parser: generic_html
-    include_keywords: []
-    exclude_keywords: []
+    include_keywords: ["机器人", "robot", "slam", "导航", "控制", "实习"]
+    exclude_keywords: ["销售", "运营"]
     city_allowlist: []
     crawl_depth: 1
-    notes: "Sample static source"
+    notes: "机器人公司官网"
 
-  - key: example_dynamic_source
-    company_name: Example Corp
-    enabled: false
+  - key: ubtech_careers
+    company_name: 优必选
+    enabled: true
     platform: career_page
     entry_urls:
-      - "https://example.com/careers"
-    mode: dynamic
+      - "https://www.ubtrobot.com/cn/join"
+    mode: auto
     parser: generic_html
-    include_keywords:
-      - "intern"
-    exclude_keywords:
-      - "senior architect"
-    city_allowlist:
-      - "Beijing"
-      - "Shanghai"
+    include_keywords: ["机器人", "robot", "控制", "机械", "嵌入式", "实习"]
+    exclude_keywords: ["销售", "行政"]
+    city_allowlist: []
     crawl_depth: 1
-    notes: "Disabled sample dynamic source"
+    notes: "机器人公司官网"
+
+  - key: agilex_careers
+    company_name: 松灵机器人
+    enabled: true
+    platform: career_page
+    entry_urls:
+      - "https://www.agilex.ai/careers"
+    mode: auto
+    parser: generic_html
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "实习"]
+    exclude_keywords: ["销售", "人事"]
+    city_allowlist: []
+    crawl_depth: 1
+    notes: "机器人公司官网"

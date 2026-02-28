@@ -12,7 +12,8 @@ DEFAULT_DB_NAME = "fmro_pc.db"
 def resolve_db_path(path: str | Path | None = None) -> Path:
     if path:
         return Path(path)
-    return Path(__file__).resolve().parents[1] / DEFAULT_DB_NAME
+    root = Path(__file__).resolve().parents[1]
+    return root / "data" / DEFAULT_DB_NAME
 
 
 @lru_cache(maxsize=8)

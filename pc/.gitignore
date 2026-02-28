@@ -5,5 +5,15 @@ __pycache__/
 *.pyo
 *.pyd
 *.egg-info/
+
+# local DB in old location
 fmro_pc.db
-output/
+
+# keep generated snapshots tracked
+output/*
+!output/jobs.csv
+!output/jobs.md
+
+data/*
+!data/.gitkeep
+!data/fmro_pc.db

@@ -1,0 +1,41 @@
+name: FMRO Auto Crawl
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */8 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+
+      - name: Setup Python env
+        working-directory: pc
+        run: |
+          uv sync --extra dev --extra dynamic
+          uv run --extra dynamic playwright install chromium
+
+      - name: Run crawl and export
+        working-directory: pc
+        run: |
+          uv run fmro db init --db data/fmro_pc.db
+          uv run fmro crawl run --config companies.yaml --db data/fmro_pc.db --dynamic
+          uv run fmro export csv --db data/fmro_pc.db --out output/jobs.csv
+          uv run fmro export md --db data/fmro_pc.db --out output/jobs.md
+
+      - name: Commit updated crawl snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pc/data/fmro_pc.db pc/output/jobs.csv pc/output/jobs.md
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(crawl): refresh jobs snapshot"
+          git push

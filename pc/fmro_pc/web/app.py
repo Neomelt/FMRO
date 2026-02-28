@@ -12,7 +12,7 @@ from fmro_pc.storage.repository import export_jobs_csv, export_jobs_markdown
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT_DIR / "companies.yaml"
-DB_PATH = ROOT_DIR / "fmro_pc.db"
+DB_PATH = ROOT_DIR / "data" / "fmro_pc.db"
 
 
 def _run_crawl(source_key: str | None, force_dynamic: bool) -> str:
@@ -26,9 +26,9 @@ def _run_crawl(source_key: str | None, force_dynamic: bool) -> str:
             force_dynamic=force_dynamic,
         )
     return (
-        f"Done. sources={summary.source_count}, pages={summary.total_pages_fetched}, "
-        f"extracted={summary.total_jobs_extracted}, inserted={summary.total_jobs_inserted}, "
-        f"updated={summary.total_jobs_updated}, failures={summary.total_failures}"
+        f"抓取完成：源={summary.source_count}，页面={summary.total_pages_fetched}，"
+        f"抽取={summary.total_jobs_extracted}，新增={summary.total_jobs_inserted}，"
+        f"更新={summary.total_jobs_updated}，失败={summary.total_failures}"
     )
 
 
@@ -48,76 +48,77 @@ def _load_jobs(keyword: str, city: str, platform: str, unapplied: bool) -> list:
 
 
 def main() -> None:
-    st.set_page_config(page_title="FMRO Jobs", page_icon="🤖", layout="wide")
-    st.title("FMRO Robotics Jobs")
+    st.set_page_config(page_title="FMRO 机器人岗位", page_icon="🤖", layout="wide")
+    st.title("FMRO 国内机器人岗位")
 
     if not CONFIG_PATH.exists():
-        st.error(f"Missing config: {CONFIG_PATH}")
+        st.error(f"缺少配置文件: {CONFIG_PATH}")
         return
 
     config = load_companies_config(CONFIG_PATH)
 
     with st.sidebar:
-        st.header("Crawl")
-        source_options = [""] + [s.key for s in config.sources if s.enabled]
-        selected_source = st.selectbox("Source (empty = all)", source_options)
-        force_dynamic = st.checkbox("Force dynamic", value=False)
-        if st.button("Run Crawl", type="primary"):
-            with st.spinner("Crawling..."):
+        st.header("抓取")
+        source_options = ["全部"] + [s.key for s in config.sources if s.enabled]
+        selected_source = st.selectbox("数据源", source_options)
+        force_dynamic = st.checkbox("强制动态渲染", value=False)
+        if st.button("开始抓取", type="primary"):
+            with st.spinner("抓取中..."):
                 try:
-                    message = _run_crawl(selected_source, force_dynamic)
+                    source_key = None if selected_source == "全部" else selected_source
+                    message = _run_crawl(source_key, force_dynamic)
                     st.success(message)
                 except Exception as exc:  # noqa: BLE001
                     st.error(str(exc))
 
         st.divider()
-        st.header("Export")
-        if st.button("Export CSV"):
+        st.header("导出")
+        if st.button("导出 CSV"):
             out = ROOT_DIR / "output" / "jobs.csv"
             with session_scope(DB_PATH) as session:
                 count = export_jobs_csv(session, out)
-            st.info(f"Exported {count} jobs to {out}")
+            st.info(f"已导出 {count} 条到 {out}")
 
-        if st.button("Export Markdown"):
+        if st.button("导出 Markdown"):
             out = ROOT_DIR / "output" / "jobs.md"
             with session_scope(DB_PATH) as session:
                 count = export_jobs_markdown(session, out)
-            st.info(f"Exported {count} jobs to {out}")
+            st.info(f"已导出 {count} 条到 {out}")
 
     col1, col2, col3, col4 = st.columns(4)
-    keyword = col1.text_input("Keyword")
-    city = col2.text_input("City")
-    platform = col3.text_input("Platform")
-    unapplied = col4.checkbox("Unapplied only", value=False)
+    keyword = col1.text_input("关键词", value="机器人")
+    city = col2.text_input("城市")
+    platform = col3.text_input("来源平台")
+    unapplied = col4.checkbox("仅看未投递", value=True)
 
     jobs = _load_jobs(keyword, city, platform, unapplied)
-    st.caption(f"{len(jobs)} jobs")
+    st.caption(f"当前共 {len(jobs)} 条岗位")
 
     for job in jobs:
         with st.expander(f"[{job.id}] {job.company_name} - {job.title}"):
-            st.write(f"Location: {job.location or '-'}")
-            st.write(f"Platform: {job.source_platform}")
-            st.write(f"Apply: {job.apply_url}")
-            st.write(f"Source: {job.source_url}")
-            st.write(f"Applied: {'yes' if job.applied else 'no'}")
-            st.write(f"Bookmarked: {'yes' if job.bookmarked else 'no'}")
+            st.write(f"地点: {job.location or '-'}")
+            st.write(f"平台: {job.source_platform}")
+            st.write(f"投递链接: {job.apply_url}")
+            st.write(f"来源链接: {job.source_url}")
+            st.write(f"已投递: {'是' if job.applied else '否'}")
+            st.write(f"已收藏: {'是' if job.bookmarked else '否'}")
 
             b1, b2, b3 = st.columns(3)
-            if b1.button("Mark Applied", key=f"apply-{job.id}"):
+            if b1.button("标记已投递", key=f"apply-{job.id}"):
                 with session_scope(DB_PATH) as session:
                     mark_applied(session, job_id=job.id)
                 st.rerun()
 
             if b2.button(
-                "Unbookmark" if job.bookmarked else "Bookmark",
+                "取消收藏" if job.bookmarked else "收藏",
                 key=f"bookmark-{job.id}",
             ):
                 with session_scope(DB_PATH) as session:
                     set_bookmark(session, job_id=job.id, enabled=not job.bookmarked)
                 st.rerun()
 
-            note_value = st.text_area("Note", value=job.notes or "", key=f"note-{job.id}")
-            if b3.button("Save Note", key=f"save-note-{job.id}"):
+            note_value = st.text_area("备注", value=job.notes or "", key=f"note-{job.id}")
+            if b3.button("保存备注", key=f"save-note-{job.id}"):
                 with session_scope(DB_PATH) as session:
                     set_note(session, job_id=job.id, text=note_value)
                 st.rerun()
