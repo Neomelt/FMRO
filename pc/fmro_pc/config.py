@@ -18,6 +18,7 @@ class SourceConfig(BaseModel):
     include_keywords: list[str] = Field(default_factory=list)
     exclude_keywords: list[str] = Field(default_factory=list)
     city_allowlist: list[str] = Field(default_factory=list)
+    request_headers: dict[str, str] = Field(default_factory=dict)
     crawl_depth: int = Field(default=1, ge=1)
     notes: str | None = None
 
@@ -41,6 +42,18 @@ class SourceConfig(BaseModel):
             if not (url.startswith("http://") or url.startswith("https://")):
                 raise ValueError(f"invalid URL: {value}")
             normalized.append(url)
+        return normalized
+
+    @field_validator("request_headers")
+    @classmethod
+    def validate_request_headers(cls, values: dict[str, str]) -> dict[str, str]:
+        normalized: dict[str, str] = {}
+        for key, val in values.items():
+            k = key.strip()
+            v = val.strip()
+            if not k or not v:
+                continue
+            normalized[k] = v
         return normalized
 
 

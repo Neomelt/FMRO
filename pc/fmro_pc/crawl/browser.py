@@ -15,7 +15,7 @@ class PlaywrightFetcher:
     def __init__(self, timeout_ms: int = 20_000) -> None:
         self.timeout_ms = timeout_ms
 
-    def fetch(self, url: str) -> FetchedPage:
+    def fetch(self, url: str, headers: dict[str, str] | None = None) -> FetchedPage:
         try:
             from playwright.sync_api import sync_playwright
         except ImportError as exc:
@@ -25,7 +25,8 @@ class PlaywrightFetcher:
 
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
-            page = browser.new_page()
+            context = browser.new_context(extra_http_headers=headers or None)
+            page = context.new_page()
             response = page.goto(url, wait_until="networkidle", timeout=self.timeout_ms)
             html = page.content()
             final_url = page.url

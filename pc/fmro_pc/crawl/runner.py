@@ -87,9 +87,11 @@ def run_crawl(
                 use_dynamic = _should_use_dynamic(source, force_dynamic)
                 page = None
 
+                headers = source.request_headers or None
+
                 if use_dynamic:
                     try:
-                        page = dynamic_fetcher.fetch(url)
+                        page = dynamic_fetcher.fetch(url, headers=headers)
                     except Exception as exc:
                         source_summary.errors.append(
                             f"dynamic fetch failed for {url}: {exc}; falling back to static"
@@ -97,7 +99,7 @@ def run_crawl(
 
                 if page is None:
                     try:
-                        page = static_fetcher.fetch(url)
+                        page = static_fetcher.fetch(url, headers=headers)
                     except Exception as exc:
                         source_summary.errors.append(f"static fetch failed for {url}: {exc}")
                         source_summary.parse_failures += 1

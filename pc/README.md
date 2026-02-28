@@ -55,8 +55,10 @@ fmro db init
 4. Run crawl
 
 ```bash
-fmro crawl run --config companies.yaml
+fmro crawl run --config companies.yaml --dynamic
 ```
+
+如果平台页面需要登录态（Boss/猎聘/实习僧常见），在 `companies.yaml` 的 `request_headers.Cookie` 填入浏览器 Cookie。
 
 5. Query jobs
 

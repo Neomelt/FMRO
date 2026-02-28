@@ -17,19 +17,23 @@ class FetchedPage:
 
 class StaticFetcher:
     def __init__(self, timeout_seconds: float = 20.0) -> None:
+        self._default_headers = {
+            "User-Agent": (
+                "FMRO-PC/0.1 (+https://github.com/;"
+                " static crawler for personal company source ingestion)"
+            )
+        }
         self._client = httpx.Client(
             timeout=timeout_seconds,
             follow_redirects=True,
-            headers={
-                "User-Agent": (
-                    "FMRO-PC/0.1 (+https://github.com/;"
-                    " static crawler for personal company source ingestion)"
-                )
-            },
+            headers=self._default_headers,
         )
 
-    def fetch(self, url: str) -> FetchedPage:
-        response = self._client.get(url)
+    def fetch(self, url: str, headers: dict[str, str] | None = None) -> FetchedPage:
+        request_headers = dict(self._default_headers)
+        if headers:
+            request_headers.update(headers)
+        response = self._client.get(url, headers=request_headers)
         response.raise_for_status()
         html = response.text
         soup = BeautifulSoup(html, "html.parser")

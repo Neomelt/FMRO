@@ -8,6 +8,10 @@ sources:
       - "https://www.zhipin.com/web/geek/job?query=slam"
     mode: dynamic
     parser: boss_zhipin
+    request_headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+      # 可选：如果网页要求登录，把你浏览器里的 Cookie 粘到这里
+      # Cookie: "cookie_key=cookie_value; ..."
     include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
     exclude_keywords: ["销售", "行政", "财务"]
     city_allowlist: []
@@ -23,6 +27,10 @@ sources:
       - "https://www.liepin.com/zhaopin/?key=slam"
     mode: dynamic
     parser: liepin
+    request_headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+      # 可选：如果网页要求登录，把你浏览器里的 Cookie 粘到这里
+      # Cookie: "cookie_key=cookie_value; ..."
     include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
     exclude_keywords: ["销售", "行政", "财务"]
     city_allowlist: []
@@ -38,6 +46,10 @@ sources:
       - "https://www.shixiseng.com/interns?k=slam"
     mode: dynamic
     parser: shixiseng
+    request_headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+      # 可选：如果网页要求登录，把你浏览器里的 Cookie 粘到这里
+      # Cookie: "cookie_key=cookie_value; ..."
     include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
     exclude_keywords: ["销售", "行政", "财务"]
     city_allowlist: []
