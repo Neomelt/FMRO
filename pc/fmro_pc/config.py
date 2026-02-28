@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Literal
 
@@ -75,13 +76,11 @@ class CompaniesConfig(BaseModel):
         return self
 
 
-def _load_cookie_overrides(path: Path) -> dict[str, str]:
-    if not path.exists():
-        return {}
-    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+def _normalize_cookie_map(raw: dict) -> dict[str, str]:
     cookies = raw.get("cookies", {})
     if not isinstance(cookies, dict):
         return {}
+
     normalized: dict[str, str] = {}
     for key, value in cookies.items():
         k = str(key).strip()
@@ -89,6 +88,22 @@ def _load_cookie_overrides(path: Path) -> dict[str, str]:
         if k and v:
             normalized[k] = v
     return normalized
+
+
+def _load_cookie_overrides(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return _normalize_cookie_map(raw)
+
+
+def _load_cookie_overrides_json(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        return {}
+    return _normalize_cookie_map(raw)
 
 
 def _apply_cookie_overrides(config: CompaniesConfig, overrides: dict[str, str]) -> CompaniesConfig:
@@ -121,8 +136,13 @@ def load_companies_config(path: str | Path = "companies.yaml") -> CompaniesConfi
     except ValidationError as exc:
         raise ValueError(f"invalid companies config: {exc}") from exc
 
+    json_cookie_path = config_path.parent / "cookies.json"
     local_cookie_path = config_path.parent / "cookies.local.yaml"
-    cookie_overrides = _load_cookie_overrides(local_cookie_path)
+
+    cookie_overrides = _load_cookie_overrides_json(json_cookie_path)
+    local_overrides = _load_cookie_overrides(local_cookie_path)
+    cookie_overrides.update(local_overrides)
+
     return _apply_cookie_overrides(config, cookie_overrides)
 
 

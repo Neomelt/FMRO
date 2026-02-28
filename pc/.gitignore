@@ -21,3 +21,5 @@ data/*
 data/sessions/
 
 cookies.local.yaml
+# optional committed cookies file (use only in private repo)
+# cookies.json
