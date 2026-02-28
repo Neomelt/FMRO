@@ -72,7 +72,7 @@ sources:
 
   - key: ubtech_careers
     company_name: 优必选
-    enabled: true
+    enabled: false
     platform: career_page
     entry_urls:
       - "https://www.ubtrobot.com/cn/join"
@@ -86,7 +86,7 @@ sources:
 
   - key: agilex_careers
     company_name: 松灵机器人
-    enabled: true
+    enabled: false
     platform: career_page
     entry_urls:
       - "https://www.agilex.ai/careers"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 
 import httpx
@@ -51,6 +52,10 @@ class ScraplingFetcher:
         if headers:
             request_headers.update(headers)
 
+        warnings.filterwarnings(
+            "ignore",
+            message=".*This logic is deprecated now, and have no effect.*",
+        )
         fetcher = Fetcher()
         response = fetcher.get(url, headers=request_headers, follow_redirects=True)
         status_code = int(getattr(response, "status", 0) or 0)
