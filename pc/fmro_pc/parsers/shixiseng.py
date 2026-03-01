@@ -49,10 +49,21 @@ class ShiXiSengParser:
         return jobs
 
     def _pick_title(self, anchor: Tag) -> str | None:
-        title = clean_text(anchor.get("title"))
-        if title:
-            return title
+        candidates = [
+            clean_text(anchor.get("title")),
+            clean_text(anchor.get("aria-label")),
+            clean_text(anchor.get("data-title")),
+            clean_text(anchor.get("data-name")),
+        ]
+
+        for value in candidates:
+            if value and not self._has_bad_chars(value):
+                return value
+
         return clean_text(anchor.get_text(" ", strip=True))
+
+    def _has_bad_chars(self, value: str) -> bool:
+        return any("\ue000" <= ch <= "\uf8ff" for ch in value) or "�" in value or "□" in value
 
     def _pick_location(self, anchor: Tag) -> str | None:
         parent = anchor.parent

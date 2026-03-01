@@ -124,10 +124,22 @@ def _extract_jobs_for_source(page, source: SourceConfig) -> list[ParsedJob]:
     elif platform == "shixiseng":
         script = """
 () => {
+  const hasBad = (s) => /[\uE000-\uF8FF�□]/.test(s || '');
   const cards = Array.from(document.querySelectorAll('a[href*="/intern/"]'));
   return cards.map(a => {
     const card = a.closest('li,div,section,article') || a.parentElement;
-    const title = (a.getAttribute('title') || a.textContent || '').trim();
+    const attrTitle = (a.getAttribute('title') || '').trim();
+    const ariaTitle = (a.getAttribute('aria-label') || '').trim();
+    const dataTitle = (a.dataset?.title || a.dataset?.name || '').trim();
+    const cardTitle = (card?.querySelector('[title]')?.getAttribute('title') || '').trim();
+    const textTitle = (a.textContent || '').trim();
+
+    let title = attrTitle || ariaTitle || dataTitle || cardTitle || textTitle;
+    if (hasBad(title)) {
+      const alt = [attrTitle, ariaTitle, dataTitle, cardTitle].find(t => t && !hasBad(t));
+      if (alt) title = alt;
+    }
+
     const text = (card?.textContent || '').trim();
     const href = a.href || a.getAttribute('href') || '';
     return { title, href, text };
