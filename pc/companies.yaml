@@ -6,14 +6,16 @@ sources:
     entry_urls:
       - "https://www.zhipin.com/web/geek/job?query=%E6%9C%BA%E5%99%A8%E4%BA%BA"
       - "https://www.zhipin.com/web/geek/job?query=slam"
+      - "https://www.zhipin.com/web/geek/job?query=ai"
+      - "https://www.zhipin.com/web/geek/job?query=agent"
     mode: dynamic
     parser: boss_zhipin
     request_headers:
       User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
       # 可选：如果网页要求登录，把你浏览器里的 Cookie 粘到这里
       # Cookie: "cookie_key=cookie_value; ..."
-    include_keywords: []
-    exclude_keywords: ["销售", "行政", "财务"]
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "ai", "agent", "llm", "智能体", "大模型"]
+    exclude_keywords: ["销售", "行政", "财务", "隐私", "协议", "营业执照", "许可证", "投资者关系", "app下载", "帮助"]
     city_allowlist: []
     crawl_depth: 1
     notes: "职位平台搜索页（可能触发反爬，建议登录后动态抓取）"
@@ -25,14 +27,16 @@ sources:
     entry_urls:
       - "https://www.liepin.com/zhaopin/?key=%E6%9C%BA%E5%99%A8%E4%BA%BA"
       - "https://www.liepin.com/zhaopin/?key=slam"
+      - "https://www.liepin.com/zhaopin/?key=ai"
+      - "https://www.liepin.com/zhaopin/?key=agent"
     mode: dynamic
     parser: liepin
     request_headers:
       User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
       # 可选：如果网页要求登录，把你浏览器里的 Cookie 粘到这里
       # Cookie: "cookie_key=cookie_value; ..."
-    include_keywords: []
-    exclude_keywords: ["销售", "行政", "财务"]
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "ai", "agent", "llm", "智能体", "大模型"]
+    exclude_keywords: ["销售", "行政", "财务", "隐私", "协议", "营业执照", "许可证", "投资者关系", "app下载", "帮助"]
     city_allowlist: []
     crawl_depth: 1
     notes: "职位平台搜索页（可能触发反爬，建议登录后动态抓取）"
@@ -50,7 +54,7 @@ sources:
       User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
       # 可选：如果网页要求登录，把你浏览器里的 Cookie 粘到这里
       # Cookie: "cookie_key=cookie_value; ..."
-    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "实习"]
+    include_keywords: ["机器人", "robot", "slam", "感知", "控制", "导航", "ai", "agent", "llm", "智能体", "大模型"]
     exclude_keywords: ["销售", "行政", "财务"]
     city_allowlist: []
     crawl_depth: 1

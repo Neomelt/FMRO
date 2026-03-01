@@ -16,6 +16,13 @@ BAD_TITLE_TOKENS = [
     "协议",
     "二维码",
     "app下载",
+    "投资者关系",
+    "使用帮助",
+    "防骗指南",
+    "消息通知",
+    "账号与安全中心",
+    "营业执照",
+    "许可证",
 ]
 
 JOB_HINT_TOKENS = [
@@ -29,6 +36,11 @@ JOB_HINT_TOKENS = [
     "感知",
     "控制",
     "导航",
+    "ai",
+    "agent",
+    "大模型",
+    "llm",
+    "智能体",
 ]
 
 
@@ -46,9 +58,19 @@ def infer_city(text: str | None) -> str | None:
     return None
 
 
+def _has_private_use_chars(text: str) -> bool:
+    return any("\ue000" <= ch <= "\uf8ff" for ch in text)
+
+
 def looks_like_job_title(text: str | None) -> bool:
     title = clean_text(text)
     if len(title) < 4 or len(title) > 80:
+        return False
+
+    if _has_private_use_chars(title):
+        return False
+
+    if "□" in title or "�" in title:
         return False
 
     lower = title.lower()
