@@ -1,95 +1,35 @@
-name: FMRO Auto Crawl
+name: FMRO Pages Publish
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 */8 * * *"
+  push:
+    branches: ["main"]
+    paths:
+      - "pc/output/jobs.csv"
+      - "pc/output/jobs.md"
+      - "pc/data/fmro_pc.db"
+      - "pc/scripts/build_site.py"
+      - ".github/workflows/pc-auto-crawl.yml"
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 jobs:
-  crawl:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - uses: astral-sh/setup-uv@v3
 
-      - name: Setup Python env
+      - name: Build static site from committed snapshot
         working-directory: pc
         run: |
-          uv sync --extra dev --extra dynamic
-          uv run --extra dynamic playwright install chromium
-
-      - name: Build cookies.local.yaml from secrets fallback (optional)
-        working-directory: pc
-        env:
-          BOSS_COOKIE: ${{ secrets.BOSS_COOKIE }}
-          LIEPIN_COOKIE: ${{ secrets.LIEPIN_COOKIE }}
-          SHIXISENG_COOKIE: ${{ secrets.SHIXISENG_COOKIE }}
-        run: |
-          uv run python - <<'PY'
-          import json
-          from pathlib import Path
-
-          json_path = Path('cookies.json')
-          payload = {}
-          if json_path.exists():
-              try:
-                  payload = json.loads(json_path.read_text(encoding='utf-8'))
-              except Exception:
-                  payload = {}
-
-          cookies = payload.get('cookies', {}) if isinstance(payload, dict) else {}
-          if not isinstance(cookies, dict):
-              cookies = {}
-
-          boss = (cookies.get('boss_robot_search') or '').strip() or ("""${BOSS_COOKIE}""".strip())
-          liepin = (cookies.get('liepin_robot_search') or '').strip() or ("""${LIEPIN_COOKIE}""".strip())
-          shixiseng = (cookies.get('shixiseng_robot_search') or '').strip() or ("""${SHIXISENG_COOKIE}""".strip())
-
-          local = {
-              'cookies': {
-                  'boss_robot_search': boss,
-                  'liepin_robot_search': liepin,
-                  'shixiseng_robot_search': shixiseng,
-              }
-          }
-          Path('cookies.local.yaml').write_text(
-              "cookies:\n"
-              f"  boss_robot_search: \"{boss}\"\n"
-              f"  liepin_robot_search: \"{liepin}\"\n"
-              f"  shixiseng_robot_search: \"{shixiseng}\"\n",
-              encoding='utf-8',
-          )
-          print('cookies.local.yaml generated (priority: cookies.json > secrets)')
-          PY
-
-      - name: Run crawl and export
-        working-directory: pc
-        run: |
-          uv run fmro db init --db data/fmro_pc.db
-          uv run fmro crawl run --config companies.yaml --db data/fmro_pc.db --dynamic --engine auto
-          uv run fmro export csv --db data/fmro_pc.db --out output/jobs.csv
-          uv run fmro export md --db data/fmro_pc.db --out output/jobs.md
-
-      - name: Build static site
-        working-directory: pc
-        run: |
+          uv sync --extra dev
           uv run python scripts/build_site.py
-
-      - name: Commit updated crawl snapshot
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add pc/data/fmro_pc.db pc/output/jobs.csv pc/output/jobs.md
-          git diff --cached --quiet && exit 0
-          git commit -m "chore(crawl): refresh jobs snapshot"
-          git push
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -99,13 +39,6 @@ jobs:
         with:
           path: pc/site
 
-  deploy:
-    needs: crawl
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
