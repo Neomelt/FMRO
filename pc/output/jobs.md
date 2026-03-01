@@ -1,14 +1,14 @@
 # FMRO Jobs
 
 Total jobs: 17
-Generated at: 2026-02-28 16:16:59 UTC
+Generated at: 2026-03-01 01:16:06 UTC
 
 ## 实习僧 - /算法实习（定位/建图/位姿估方向）
 - ID: 17
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_6s00iw66uphh?pcm=pc_SearchList
@@ -20,7 +20,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_grs1uvvcmsec?pcm=pc_SearchList
@@ -32,7 +32,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_dmygudwjdejy?pcm=pc_SearchList
@@ -44,7 +44,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_r45av3gnt3zl?pcm=pc_SearchList
@@ -56,7 +56,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_leopqwcgnfoe?pcm=pc_SearchList
@@ -68,7 +68,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_ap1zdtchs1yr?pcm=pc_SearchList
@@ -80,7 +80,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_dshmxs9czra2?pcm=pc_SearchList
@@ -92,7 +92,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_pmvzpiptibam?pcm=pc_SearchList
@@ -104,7 +104,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_47ykc2tkoyoj?pcm=pc_SearchList
@@ -116,7 +116,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_xx9rytiorvzy?pcm=pc_SearchList
@@ -128,7 +128,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_12bftzju4uif?pcm=pc_SearchList
@@ -140,7 +140,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_iuxgo1qizymy?pcm=pc_SearchList
@@ -152,7 +152,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_5dleevhlxjxh?pcm=pc_SearchList
@@ -164,7 +164,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_kv42eodt1ldc?pcm=pc_SearchList
@@ -176,7 +176,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_vpan3aqgeuzv?pcm=pc_SearchList
@@ -188,7 +188,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_u1zzki28dbnl?pcm=pc_SearchList
@@ -200,7 +200,7 @@ Generated at: 2026-02-28 16:16:59 UTC
 - Location: -
 - Platform: shixiseng
 - Posted: -
-- Updated: 2026-02-28
+- Updated: 2026-03-01
 - Applied: no
 - Bookmarked: no
 - Apply: https://www.shixiseng.com/intern/inn_vdamxgf1tr0d?pcm=pc_SearchList
